@@ -34,9 +34,9 @@ class MainActivity : AppCompatActivity() {
         appComponent.inject(this)
 
         vm.apply { with("ddd") {
-                setDataToDocument("John", hashMapOf("Age" to "1000 yo")) {
+                setDataToDocument("Dick", hashMapOf("Color" to "Yellow")) {
                     lifecycleScope.launch {
-                        getDataFromDocument("John").collect(::documentCollector)
+                        getAllDocumentsInCollection().collect(::collectionCollector)
                     }
                 }
             }

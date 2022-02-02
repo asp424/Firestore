@@ -13,6 +13,8 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface FirestoreSource {
     // String - имя коллекции
@@ -23,7 +25,7 @@ interface FirestoreSource {
     suspend fun String.setDataToDocument(
         docName: String,
         data: HashMap<String, String>,
-        onSuccess: () -> Unit
+        onSuccess: (Any?) -> Unit
     )
 
     class Base @Inject constructor() : FirestoreSource {
@@ -37,24 +39,21 @@ interface FirestoreSource {
         override suspend fun String.setDataToDocument(
             docName: String,
             data: HashMap<String, String>,
-            onSuccess: () -> Unit
-        ) {
-            collection.apply {
-                if (docName.isNotEmpty()) runTask(document(docName).set(data, SetOptions.merge()))
-                { onSuccess() }
-                else runTask(add(data)) { onSuccess() }
+            onSuccess: (Any?) -> Unit
+        ) { collection.apply {
+                if (docName.isNotEmpty())
+                     onSuccess(runTask(document(docName).set(data, SetOptions.merge())))
+                else onSuccess(runTask(add(data)))
             }
         }
 
-        private fun <T> runTask(task: Task<T>, success: (T) -> Unit) {
-            task.addOnSuccessListener { success(it) }
+        private suspend fun <T> runTask(task: Task<T>): T = suspendCoroutine { cont ->
+            runCatching { task.addOnSuccessListener { cont.resume(it) } }
         }
 
         private fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
-            runCatching {
-                runTask(task) { trySendBlocking(Resource.Success(it)) }
-                awaitClose()
-            }
+            trySendBlocking(Resource.Success(runTask(task)))
+            awaitClose()
         }
 
         private val String.getDocuments get() = collection.get()
