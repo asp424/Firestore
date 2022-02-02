@@ -29,8 +29,7 @@ interface FirestoreSource {
     class Base @Inject constructor() : FirestoreSource {
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        override suspend fun String.getAllDocumentsInCollection() =
-            runFlow(collection.get())
+        override suspend fun String.getAllDocumentsInCollection() = runFlow(getDocuments)
 
         override suspend fun String.getDataFromDocument(docName: String) =
             runFlow(collection.document(docName).get())
@@ -40,26 +39,29 @@ interface FirestoreSource {
             data: HashMap<String, String>,
             onSuccess: () -> Unit
         ) {
-            runCatching {
-                if (docName.isNotEmpty())
-                    collection.document(docName).set(data, SetOptions.merge())
-                        .apply { success(this) { onSuccess() } }
-                else collection.add(data).apply { success(this) { onSuccess() } }
+            collection.apply {
+                if (docName.isNotEmpty()) runTask(document(docName).set(data, SetOptions.merge()))
+                { onSuccess() }
+                else runTask(add(data)) { onSuccess() }
             }
         }
+
+        private fun <T> runTask(task: Task<T>, success: (T) -> Unit) {
+            task.addOnSuccessListener { success(it) }
+        }
+
+        private fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
+            runCatching {
+                runTask(task) { trySendBlocking(Resource.Success(it)) }
+                awaitClose()
+            }
+        }
+
+        private val String.getDocuments get() = collection.get()
 
         private val String.collection get() = db.collection(this)
 
         private val db by lazy { Firebase.firestore }
-
-        private fun <T> success(task: Task<T>, suc: (T) -> Unit) {
-            task.addOnSuccessListener { suc(it) }
-        }
-
-        private fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
-                success(task) { trySendBlocking(Resource.Success(it)) }
-                awaitClose()
-            }
     }
 }
 
