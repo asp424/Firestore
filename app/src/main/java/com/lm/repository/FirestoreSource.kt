@@ -51,7 +51,7 @@ interface FirestoreSource {
             runCatching { task.addOnSuccessListener { cont.resume(it) } }
         }
 
-        private fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
+        private suspend fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
             trySendBlocking(Resource.Success(runTask(task)))
             awaitClose()
         }
