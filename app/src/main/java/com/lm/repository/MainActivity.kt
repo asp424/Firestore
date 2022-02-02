@@ -12,6 +12,7 @@ import com.lm.core.appComponent
 import com.lm.repository.databinding.ActivityMainBinding
 import com.lm.ui.viewmodels.MainViewModel
 import com.lm.ui.viewmodels.viewmodelsfactory.ViewModelFactory
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,10 +33,8 @@ class MainActivity : AppCompatActivity() {
 
         appComponent.inject(this)
 
-        vm.apply {
-            with("ddd") {
+        vm.apply { with("ddd") {
                 setDataToDocument("John", hashMapOf("Age" to "1000 yo")) {
-                    //lifecycleScope.launch { getCollection().collect(::collectionCollector) }
                     lifecycleScope.launch {
                         getDataFromDocument("John").collect(::documentCollector)
                     }
@@ -46,10 +46,9 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun collectionCollector(resource: Resource<QuerySnapshot?>) {
         when (resource) {
-            is Resource.Success -> {
-                resource.data?.documents?.forEach {
-                    it.data?.keys?.forEach { t ->
-                        binding.tv.text = "${binding.tv.text}\n ${it.id} [ $t: ${it[t]} ]"
+            is Resource.Success -> { resource.data?.documents?.forEach {
+                    it.data?.keys?.forEach { t -> binding.tv.text =
+                        "${binding.tv.text}\n ${it.id} [ $t: ${it[t]} ]"
                     }
                 }
             }
@@ -61,10 +60,9 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun documentCollector(resource: Resource<DocumentSnapshot?>) {
         when (resource) {
-            is Resource.Success -> {
-                with(resource.data){
-                    this?.data?.keys?.forEach {
-                        binding.tv.text = "document ${binding.tv.text}\n ${id}:: [ $it: ${get(it)} ]"
+            is Resource.Success -> { with(resource.data){
+                this?.data?.keys?.forEach {
+                    binding.tv.text = "${binding.tv.text}\n $id:: [ $it: ${get(it)} ]"
                     }
                 }
             }

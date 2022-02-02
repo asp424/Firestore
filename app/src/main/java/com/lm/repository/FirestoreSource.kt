@@ -1,5 +1,6 @@
 package com.lm.repository
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
@@ -12,11 +13,9 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 interface FirestoreSource {
-// String - имя коллекции
+    // String - имя коллекции
     suspend fun String.getAllDocumentsInCollection(): Flow<Resource<QuerySnapshot?>>
 
     suspend fun String.getDataFromDocument(docName: String): Flow<Resource<DocumentSnapshot?>>
@@ -30,20 +29,11 @@ interface FirestoreSource {
     class Base @Inject constructor() : FirestoreSource {
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        override suspend fun String.getAllDocumentsInCollection():
-                Flow<Resource<QuerySnapshot?>> =
-            callbackFlow { collection.get()
-                .addOnSuccessListener { trySendBlocking(Resource.Success(it)) }
-                awaitClose()
-            }
+        override suspend fun String.getAllDocumentsInCollection() =
+            runFlow(collection.get())
 
-        override suspend fun String.getDataFromDocument(docName: String):
-                Flow<Resource<DocumentSnapshot?>> =
-            callbackFlow { collection.apply { document(docName).get()
-                .addOnCompleteListener { trySendBlocking(Resource.Success(it.result)) }
-                }
-                awaitClose()
-            }
+        override suspend fun String.getDataFromDocument(docName: String) =
+            runFlow(collection.document(docName).get())
 
         override suspend fun String.setDataToDocument(
             docName: String,
@@ -52,15 +42,25 @@ interface FirestoreSource {
         ) {
             runCatching {
                 if (docName.isNotEmpty())
-                    collection.document(docName).set(data, SetOptions.merge()).addOnCompleteListener { onSuccess() }
-                else
-                // автоген имени документа
-                    collection.add(data).addOnCompleteListener { onSuccess() }
+                    collection.document(docName).set(data, SetOptions.merge())
+                        .apply { success(this) { onSuccess() } }
+                else collection.add(data).apply { success(this) { onSuccess() } }
             }
         }
 
         private val String.collection get() = db.collection(this)
 
         private val db by lazy { Firebase.firestore }
+
+        private fun <T> success(task: Task<T>, suc: (T) -> Unit) {
+            task.addOnSuccessListener { suc(it) }
+        }
+
+        private fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
+                success(task) { trySendBlocking(Resource.Success(it)) }
+                awaitClose()
+            }
     }
 }
+
+

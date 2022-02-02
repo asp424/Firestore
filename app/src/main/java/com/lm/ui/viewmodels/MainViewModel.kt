@@ -19,10 +19,10 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         data: HashMap<String, String>,
         onSuccess: () -> Unit
     ) = viewModelScope.launch(Dispatchers.IO) {
-        repository.apply { setDataToDocumentR(docName, data) { onSuccess() } }
+        with(repository) { setDataToDocumentR(docName, data) { onSuccess() } }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @ExperimentalCoroutinesApi
     suspend fun String.getAllDocumentsInCollection(): StateFlow<Resource<QuerySnapshot?>> =
         with(repository){ getAllDocumentsInCollection().flatMapLatest { flowOf(it) }.stateIn(
             scope = viewModelScope,
@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @ExperimentalCoroutinesApi
     suspend fun String.getDataFromDocument(doc: String): StateFlow<Resource<DocumentSnapshot?>> =
         with(repository){ getDataFromDocument(doc).flatMapLatest { flowOf(it) }.stateIn(
                 scope = viewModelScope,

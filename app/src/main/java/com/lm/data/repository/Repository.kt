@@ -30,7 +30,8 @@ interface Repository {
             fireStoreSource.apply { setDataToDocument(docName, data) { onSuccess() } }
         }
 
-        override suspend fun String.getAllDocumentsInCollection() = with(fireStoreSource) { getAllDocumentsInCollection() }
+        override suspend fun String.getAllDocumentsInCollection() =
+            with(fireStoreSource) { getAllDocumentsInCollection() }
 
         override suspend fun String.getDataFromDocument(doc: String) =
             with(fireStoreSource) { getDataFromDocument(doc) }
