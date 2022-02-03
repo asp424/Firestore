@@ -1,7 +1,7 @@
-package com.lm.di
+package com.lm.repository.di
 
 import android.app.Application
-import com.lm.di.mapmodule.MapModule
+import com.lm.repository.di.mapmodule.MapModule
 import com.lm.repository.MainActivity
 import dagger.BindsInstance
 import dagger.Component

@@ -1,7 +1,7 @@
-package com.lm.di.modules
+package com.lm.repository.di.modules
 
 import androidx.lifecycle.ViewModel
-import com.lm.ui.viewmodels.MainViewModel
+import com.lm.repository.ui.viewmodels.MainViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

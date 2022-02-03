@@ -1,4 +1,4 @@
-package com.lm.repository
+package com.lm.data.repository
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.lm.ui.viewmodels.viewmodelsfactory
+package com.lm.repository.ui.viewmodelsfactory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

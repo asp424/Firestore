@@ -1,4 +1,4 @@
-package com.lm.core
+package com.lm.repository.core
 
 sealed class Resource<out T> : Object<T> {
 

@@ -7,13 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
-import com.lm.core.Resource
-import com.lm.core.appComponent
+import com.lm.repository.core.Resource
+import com.lm.repository.core.appComponent
 import com.lm.repository.databinding.ActivityMainBinding
-import com.lm.ui.viewmodels.MainViewModel
-import com.lm.ui.viewmodels.viewmodelsfactory.ViewModelFactory
+import com.lm.repository.ui.viewmodels.MainViewModel
+import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -33,10 +34,11 @@ class MainActivity : AppCompatActivity() {
 
         appComponent.inject(this)
 
-        vm.apply { with("ddd") {
-                setDataToDocument("Dick", hashMapOf("Color" to "Yellow")) {
+        vm.apply {
+            with(listOf("aaa", "Dick")) {
+                setDataToDocument(this, hashMapOf(Calendar.getInstance().time.time.toString() to "Hi")) {
                     lifecycleScope.launch {
-                        getAllDocumentsInCollection().collect(::collectionCollector)
+                        getAllDocumentsInCollection(this@with).collect(::collectionCollector)
                     }
                 }
             }
@@ -46,9 +48,11 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun collectionCollector(resource: Resource<QuerySnapshot?>) {
         when (resource) {
-            is Resource.Success -> { resource.data?.documents?.forEach {
-                    it.data?.keys?.forEach { t -> binding.tv.text =
-                        "${binding.tv.text}\n ${it.id} [ $t: ${it[t]} ]"
+            is Resource.Success -> {
+                resource.data?.documents?.forEach {
+                    it.data?.keys?.forEach { t ->
+                        binding.tv.text =
+                            "${binding.tv.text}\n ${it.id} [ $t: ${it[t]} ]"
                     }
                 }
             }
@@ -60,9 +64,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun documentCollector(resource: Resource<DocumentSnapshot?>) {
         when (resource) {
-            is Resource.Success -> { with(resource.data){
-                this?.data?.keys?.forEach {
-                    binding.tv.text = "${binding.tv.text}\n $id:: [ $it: ${get(it)} ]"
+            is Resource.Success -> {
+                with(resource.data) {
+                    this?.data?.keys?.forEach {
+                        binding.tv.text = "${binding.tv.text}\n $id:: [ $it: ${get(it)} ]"
                     }
                 }
             }
@@ -71,4 +76,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
 

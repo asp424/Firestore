@@ -1,7 +1,7 @@
-package com.lm.di.modules
+package com.lm.repository.di.modules
 
 import androidx.lifecycle.ViewModelProvider
-import com.lm.ui.viewmodels.viewmodelsfactory.ViewModelFactory
+import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 
