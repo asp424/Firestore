@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 interface FirestoreSource {
-    // String - имя коллекции
+   
     suspend fun getAllDocumentsInCollection(map: List<String>): Flow<Resource<QuerySnapshot?>>
 
     suspend fun getDataFromDocument(map: List<String>): Flow<Resource<DocumentSnapshot?>>
