@@ -8,6 +8,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.lm.repository.core.Resource
+import com.lm.repository.data.FirePath
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -18,26 +19,26 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 interface FirestoreSource {
-   
-    suspend fun getAllDocumentsInCollection(map: List<String>): Flow<Resource<QuerySnapshot?>>
 
-    suspend fun getDataFromDocument(map: List<String>): Flow<Resource<DocumentSnapshot?>>
+    suspend fun takeAllDocumentsInCollection(path: FirePath): Flow<Resource<QuerySnapshot?>>
 
-    suspend fun setDataToDocument(map: List<String>, data: HashMap<String, String>,
+    suspend fun dataFromDocument(path: FirePath): Flow<Resource<DocumentSnapshot?>>
+
+    suspend fun putDataToDocument(path: FirePath, data: HashMap<String, String>,
         onSuccess: (Any?) -> Unit
     )
 
-    suspend fun deleteDocument(map: List<String>, onSuccess: (Any?) -> Unit)
+    suspend fun deleteDocument(path: FirePath, onSuccess: (Any?) -> Unit)
 
     suspend fun deleteField(
-        map: List<String>,
+        path: FirePath,
         field: String,
         onSuccess: (Any?) -> Unit
     )
 
-    suspend fun clearDocument(map: List<String>, onSuccess: () -> Unit)
+    suspend fun clearDocument(path: FirePath, onSuccess: () -> Unit)
 
-    suspend fun deleteCollection(map: List<String>, onSuccess: () -> Unit)
+    suspend fun deleteCollection(path: FirePath, onSuccess: () -> Unit)
 
 }
 

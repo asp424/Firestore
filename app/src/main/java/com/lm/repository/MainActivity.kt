@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
 import com.lm.repository.core.appComponent
+import com.lm.repository.data.FirePath
 import com.lm.repository.databinding.ActivityMainBinding
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
@@ -35,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         appComponent.inject(this)
 
         vm.apply {
-            with(listOf("aaa", "Dick")) {
-                setDataToDocument(this, hashMapOf(Calendar.getInstance().time.time.toString() to "Hi")) {
+            with(FirePath("ddd", "ass")) {
+                putDataToDocument(this, hashMapOf(Calendar.getInstance().time.time.toString() to "Hi")) {
                     lifecycleScope.launch {
-                        getAllDocumentsInCollection(this@with).collect(::collectionCollector)
+                        takeAllDocumentsInCollection(this@with).collect(::collectionCollector)
                     }
                 }
             }

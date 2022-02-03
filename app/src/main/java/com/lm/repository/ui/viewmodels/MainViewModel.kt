@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
+import com.lm.repository.data.FirePath
 import com.lm.repository.data.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,49 +15,49 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    fun setDataToDocument(
-        map: List<String>,
+    fun putDataToDocument(
+        path: FirePath,
         data: HashMap<String, String>,
         onSuccess: () -> Unit
     ) = viewModelScope.launch(Dispatchers.IO) {
-        with(repository) { setDataToDocumentR(map, data) { onSuccess() } }
+        with(repository) { putDataToDocumentR(path, data) { onSuccess() } }
     }
 
     @ExperimentalCoroutinesApi
-    suspend fun getAllDocumentsInCollection(map: List<String>): StateFlow<Resource<QuerySnapshot?>> =
-        with(repository){ getAllDocumentsInCollection(map).flatMapLatest { flowOf(it) }.stateIn(
+    suspend fun takeAllDocumentsInCollection(path: FirePath): StateFlow<Resource<QuerySnapshot?>> =
+        with(repository){ takeAllDocumentsInCollection(path).flatMapLatest { flowOf(it) }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = com.lm.repository.core.Resource.Loading
+            initialValue = Resource.Loading
         )
     }
 
     @ExperimentalCoroutinesApi
-    suspend fun getDataFromDocument(map: List<String>): StateFlow<Resource<DocumentSnapshot?>> =
-        with(repository){ getDataFromDocument(map).flatMapLatest { flowOf(it) }.stateIn(
+    suspend fun dataFromDocumentV(path: FirePath): StateFlow<Resource<DocumentSnapshot?>> =
+        with(repository){ dataFromDocument(path).flatMapLatest { flowOf(it) }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
-                initialValue = com.lm.repository.core.Resource.Loading
+                initialValue = Resource.Loading
             )
         }
 
-    fun deleteDocument(map: List<String>, onSuccess: () -> Unit) =
+    fun deleteDocument(path: FirePath, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
-            with(repository) { deleteDocument(map) { onSuccess() } }
+            with(repository) { deleteDocument(path) { onSuccess() } }
         }
 
-    fun deleteField(map: List<String>, field: String, onSuccess: () -> Unit) =
+    fun deleteField(path: FirePath, field: String, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
-            with(repository) { deleteField(map, field) { onSuccess() } }
+            with(repository) { deleteField(path, field) { onSuccess() } }
         }
 
-    fun clearDocument(map: List<String>, onSuccess: () -> Unit) =
+    fun clearDocument(path: FirePath, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
-            with(repository) { clearDocument(map) { onSuccess() } }
+            with(repository) { clearDocument(path) { onSuccess() } }
         }
 
-    fun deleteCollection(map: List<String>, onSuccess: () -> Unit) =
+    fun deleteCollection(path: FirePath, onSuccess: () -> Unit) =
         viewModelScope.launch(Dispatchers.IO) {
-            with(repository) { deleteCollection(map) { onSuccess() } }
+            with(repository) { deleteCollection(path) { onSuccess() } }
         }
 }

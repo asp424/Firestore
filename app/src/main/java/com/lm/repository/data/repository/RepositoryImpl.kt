@@ -1,32 +1,33 @@
 package com.lm.repository.data.repository
 
+import com.lm.repository.data.FirePath
 import com.lm.repository.data.sources.FirestoreSource
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val fireStoreSource: FirestoreSource) :
     Repository {
 
-    override suspend fun setDataToDocumentR(
-        map: List<String>, data: HashMap<String, String>,
+    override suspend fun putDataToDocumentR(
+        path: FirePath, data: HashMap<String, String>,
         onSuccess: () -> Unit
-    ) = with(fireStoreSource){ setDataToDocument(map, data) { onSuccess() } }
+    ) = with(fireStoreSource){ putDataToDocument(path, data) { onSuccess() } }
 
-    override suspend fun getAllDocumentsInCollection(map: List<String>) =
-        with(fireStoreSource) { getAllDocumentsInCollection(map) }
+    override suspend fun takeAllDocumentsInCollection(path: FirePath) =
+        with(fireStoreSource) { takeAllDocumentsInCollection(path) }
 
-    override suspend fun getDataFromDocument(map: List<String>) =
-        with(fireStoreSource) { getDataFromDocument(map) }
+    override suspend fun dataFromDocument(path: FirePath) =
+        with(fireStoreSource) { dataFromDocument(path) }
 
-    override suspend fun deleteDocument(map: List<String>, onSuccess: () -> Unit) =
-        with(fireStoreSource) { deleteDocument(map) { onSuccess() } }
+    override suspend fun deleteDocument(path: FirePath, onSuccess: () -> Unit) =
+        with(fireStoreSource) { deleteDocument(path) { onSuccess() } }
 
-    override suspend fun deleteField(map: List<String>, field: String, onSuccess: () -> Unit) =
-        with(fireStoreSource) { deleteField(map, field) { onSuccess() } }
+    override suspend fun deleteField(path: FirePath, field: String, onSuccess: () -> Unit) =
+        with(fireStoreSource) { deleteField(path, field) { onSuccess() } }
 
-    override suspend fun clearDocument(map: List<String>, onSuccess: () -> Unit) =
-        with(fireStoreSource) { clearDocument(map) { onSuccess() } }
+    override suspend fun clearDocument(path: FirePath, onSuccess: () -> Unit) =
+        with(fireStoreSource) { clearDocument(path) { onSuccess() } }
 
-    override suspend fun deleteCollection(map: List<String>, onSuccess: () -> Unit) {
-        with(fireStoreSource) { deleteCollection(map){ onSuccess() } }
+    override suspend fun deleteCollection(path: FirePath, onSuccess: () -> Unit) {
+        with(fireStoreSource) { deleteCollection(path){ onSuccess() } }
         }
     }

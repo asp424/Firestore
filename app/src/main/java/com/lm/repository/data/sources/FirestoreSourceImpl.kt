@@ -6,6 +6,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.lm.repository.core.Resource
+import com.lm.repository.data.FirePath
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -19,48 +20,49 @@ import kotlin.coroutines.suspendCoroutine
  class FirestoreSourceImpl @Inject constructor() : FirestoreSource {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getAllDocumentsInCollection(map: List<String>) = runFlow(map[0].getDocuments)
+    override suspend fun takeAllDocumentsInCollection(path: FirePath) =
+         runFlow(path.collection.doc)
 
-    override suspend fun getDataFromDocument(map: List<String>) =
-        runFlow(map[0].collection.document(map[1]).get())
+    override suspend fun dataFromDocument(path: FirePath) =
+        runFlow(path.collection.col.document(path.document).get())
 
-    override suspend fun setDataToDocument(
-        map: List<String>,
+    override suspend fun putDataToDocument(
+        path: FirePath,
         data: HashMap<String, String>,
         onSuccess: (Any?) -> Unit
-    ) = with(map[0].collection) {
-        if (map[1].isNotEmpty())
-            onSuccess(runTask(document(map[1]).set(data, SetOptions.merge())))
+    ) = with(path.collection.col) {
+        if (path.document.isNotEmpty())
+            onSuccess(runTask(document(path.document).set(data, SetOptions.merge())))
         else onSuccess(runTask(add(data)))
     }
 
-    override suspend fun deleteDocument(map: List<String>, onSuccess: (Any?) -> Unit) =
-        onSuccess(runTask(map[0].collection.document(map[1]).delete()))
+    override suspend fun deleteDocument(path: FirePath, onSuccess: (Any?) -> Unit) =
+        onSuccess(runTask(path.collection.col.document(path.document).delete()))
 
     override suspend fun deleteField(
-        map: List<String>,
+        path: FirePath,
         field: String,
         onSuccess: (Any?) -> Unit
     ) = onSuccess(
         runTask(
-            map[0].collection.document(map[1])
+            path.collection.col.document(path.document)
                 .update(hashMapOf<String, Any>(field to FieldValue.delete()))
         )
     )
 
     override suspend fun clearDocument(
-        map: List<String>,
+        path: FirePath,
         onSuccess: () -> Unit
-    ) = getDataFromDocument(map).collect {
+    ) = dataFromDocument(path).collect {
         if (it is Resource.Success) it.data.data?.forEach { maps ->
-            deleteField(map, maps.key) { onSuccess() }
+            deleteField(path, maps.key) { onSuccess() }
         }
     }
 
-     override suspend fun deleteCollection(map: List<String>, onSuccess: () -> Unit) =
-         getAllDocumentsInCollection(map).collect{
+     override suspend fun deleteCollection(path: FirePath, onSuccess: () -> Unit) =
+         takeAllDocumentsInCollection(path).collect{
              if (it is Resource.Success) it.data.documents.forEach { doc ->
-                 deleteDocument(listOf(map[0], doc.id)){ onSuccess() }
+                 deleteDocument(FirePath(path.collection, doc.id) ){ onSuccess() }
              }
          }
 
@@ -73,9 +75,9 @@ import kotlin.coroutines.suspendCoroutine
         awaitClose()
     }
 
-    private val String.getDocuments get() = collection.get()
+    private val String.doc get() = col.get()
 
-    private val String.collection get() = db.collection(this)
+    private val String.col get() = db.collection(this)
 
     private val db by lazy { Firebase.firestore }
 
