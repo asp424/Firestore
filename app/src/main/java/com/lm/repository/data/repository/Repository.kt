@@ -4,11 +4,8 @@ package com.lm.repository.data.repository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
-import com.lm.repository.data.FirePath
-import com.lm.repository.data.sources.FirestoreSource
-import com.lm.repository.data.sources.FirestoreSourceImpl
+import com.lm.repository.data.models.FirePath
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 interface Repository {
 

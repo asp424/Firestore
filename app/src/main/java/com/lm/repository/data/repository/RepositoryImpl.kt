@@ -1,6 +1,6 @@
 package com.lm.repository.data.repository
 
-import com.lm.repository.data.FirePath
+import com.lm.repository.data.models.FirePath
 import com.lm.repository.data.sources.FirestoreSource
 import javax.inject.Inject
 

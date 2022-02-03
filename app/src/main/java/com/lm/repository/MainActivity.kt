@@ -9,7 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
 import com.lm.repository.core.appComponent
-import com.lm.repository.data.FirePath
+import com.lm.repository.data.models.FirePath
 import com.lm.repository.databinding.ActivityMainBinding
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
