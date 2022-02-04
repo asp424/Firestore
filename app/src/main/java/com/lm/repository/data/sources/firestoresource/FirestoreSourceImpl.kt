@@ -1,4 +1,4 @@
-package com.lm.repository.data.sources
+package com.lm.repository.data.sources.firestoresource
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FieldValue

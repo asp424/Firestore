@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         appComponent.inject(this)
 
         vm.apply {
-            with(FirePath("ddd", "ass")) {
+            with(FirePath("aaa", "ass")) {
                 putDataToDocument(this, hashMapOf(Calendar.getInstance().time.time.toString() to "Hi")) {
                     lifecycleScope.launch {
                         takeAllDocumentsInCollection(this@with).collect(::collectionCollector)

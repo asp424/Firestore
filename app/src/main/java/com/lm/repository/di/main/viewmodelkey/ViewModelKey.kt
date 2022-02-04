@@ -1,4 +1,4 @@
-package com.lm.repository.di.modules
+package com.lm.repository.di.main.viewmodelkey
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

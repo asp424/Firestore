@@ -6,14 +6,14 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
 import com.lm.repository.data.models.FirePath
-import com.lm.repository.data.repository.Repository
+import com.lm.repository.data.repository.firestore.FirestoreRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class MainViewModel @Inject constructor(private val repository: FirestoreRepository) : ViewModel() {
 
     fun putDataToDocument(
         path: FirePath,

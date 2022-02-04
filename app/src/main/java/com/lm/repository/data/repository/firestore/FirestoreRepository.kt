@@ -1,4 +1,4 @@
-package com.lm.repository.data.repository
+package com.lm.repository.data.repository.firestore
 
 
 import com.google.firebase.firestore.DocumentSnapshot
@@ -7,7 +7,7 @@ import com.lm.repository.core.Resource
 import com.lm.repository.data.models.FirePath
 import kotlinx.coroutines.flow.Flow
 
-interface Repository {
+interface FirestoreRepository {
 
     suspend fun putDataToDocumentR(
         path: FirePath, data: HashMap<String, String>,

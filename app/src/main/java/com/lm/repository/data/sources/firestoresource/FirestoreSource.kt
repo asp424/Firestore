@@ -1,4 +1,4 @@
-package com.lm.repository.data.sources
+package com.lm.repository.data.sources.firestoresource
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -12,8 +12,9 @@ interface FirestoreSource {
 
     suspend fun dataFromDocument(path: FirePath): Flow<Resource<DocumentSnapshot?>>
 
-    suspend fun putDataToDocument(path: FirePath, data: HashMap<String, String>,
-                                  onSuccess: (Any?) -> Unit
+    suspend fun putDataToDocument(
+        path: FirePath, data: HashMap<String, String>,
+        onSuccess: (Any?) -> Unit
     )
 
     suspend fun deleteDocument(path: FirePath, onSuccess: (Any?) -> Unit)

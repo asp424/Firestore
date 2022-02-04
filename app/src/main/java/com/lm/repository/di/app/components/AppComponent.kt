@@ -1,8 +1,8 @@
-package com.lm.repository.di
+package com.lm.repository.di.app.components
 
 import android.app.Application
-import com.lm.repository.di.mapmodule.MapModule
 import com.lm.repository.MainActivity
+import com.lm.repository.di.app.mapmodule.MapModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
