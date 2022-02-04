@@ -17,10 +17,14 @@ interface StatusCollector {
         override fun collect(response: RegResponse, onDone: (RegResponse) -> Unit) {
             when (response) {
                 is RegResponse.Credential -> {
-                    if (auth.currentUser?.uid == null) CoroutineScope(Dispatchers.IO).launch {
-                        authRepository.authWithCredential(response.credential).collect { onDone(it) }
-                        onDone(RegResponse.SmsCode(response.credential.smsCode.toString())) }
-                    else onDone(RegResponse.OnSuccess(auth.currentUser?.uid))
+                    with(auth.currentUser?.uid) {
+                        if (this == null) CoroutineScope(Dispatchers.IO).launch {
+                            authRepository.authWithCredential(response.credential)
+                                .collect { onDone(it) }
+                            onDone(RegResponse.SmsCode(response.credential.smsCode.toString()))
+                        }
+                        else onDone(RegResponse.OnSuccess(this))
+                    }
                 }
                 is RegResponse.OnError -> onDone(response)
                 is RegResponse.RegId -> onDone(response)
