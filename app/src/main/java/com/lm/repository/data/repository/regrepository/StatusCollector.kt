@@ -22,8 +22,7 @@ interface StatusCollector {
                         if (this == null) CoroutineScope(Dispatchers.IO).launch {
                             authRepository.authWithCredential(response.credential)
                                 .collect { onDone(it) }
-                           
-                        }
+                           }
                         else onDone(RegResponse.OnSuccess(this))
                     }
                 }
@@ -34,3 +33,4 @@ interface StatusCollector {
         }
     }
 }
+                        
