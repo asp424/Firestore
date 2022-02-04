@@ -20,14 +20,17 @@ interface AuthRepository {
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
             authWithCredential(PhoneAuthProvider.getCredential(id, code))
 
-        override suspend fun authWithCredential(credential: PhoneAuthCredential) = callbackFlow {
-                auth.signInWithCredential(credential).addOnCompleteListener { task ->
 
-                    if (task.isSuccessful) trySendBlocking(RegResponse.OnSuccess(task.result?.user?.uid))
+        override suspend fun authWithCredential(credential: PhoneAuthCredential) =
+            callbackFlow {
+            auth.signInWithCredential(credential)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful)
+                        trySendBlocking(RegResponse.OnSuccess(task.result?.user?.uid)) }
 
-                }.addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message)) }
+                .addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message)) }
 
-                awaitClose()
-            }
+            awaitClose()
+        }
     }
 }

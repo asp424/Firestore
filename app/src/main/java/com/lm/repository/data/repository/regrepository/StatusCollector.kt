@@ -1,6 +1,8 @@
 package com.lm.repository.data.repository.regrepository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,15 +14,20 @@ interface StatusCollector {
 
     class Base @Inject constructor(
         private val auth: FirebaseAuth,
-        private val authRepository: AuthRepository
+        private val authRepository: AuthRepository,
+        private val dispatcher: CoroutineDispatcher
     ): StatusCollector{
         override fun collect(response: RegResponse, onDone: (RegResponse) -> Unit) {
             when (response) {
                 is RegResponse.Credential -> {
-                    if (auth.currentUser?.uid == null) CoroutineScope(Dispatchers.IO).launch {
-                        authRepository.authWithCredential(response.credential).collect { onDone(it) }
-                        onDone(RegResponse.SmsCode(response.credential.smsCode.toString())) }
-                    else onDone(RegResponse.OnSuccess(auth.currentUser?.uid))
+                    onDone(RegResponse.SmsCode(response.credential.smsCode.toString()))
+                    with(auth.currentUser?.uid) {
+                        if (this == null) CoroutineScope(dispatcher).launch {
+                            authRepository.authWithCredential(response.credential)
+                                .collect { onDone(it) }
+                        }
+                        else onDone(RegResponse.OnSuccess(this))
+                    }
                 }
                 is RegResponse.OnError -> onDone(response)
                 is RegResponse.RegId -> onDone(response)

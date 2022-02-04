@@ -10,6 +10,7 @@ import com.lm.repository.di.registration.modules.StatusCollectorModule
 import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
 import dagger.BindsInstance
 import dagger.Component
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Component(
@@ -27,6 +28,9 @@ interface RegComponent {
 
         @BindsInstance
         fun authInstance(authInstance: FirebaseAuth): Builder
+
+        @BindsInstance
+        fun dispatcher(dispatcher: CoroutineDispatcher): Builder
 
         fun create(): RegComponent
     }

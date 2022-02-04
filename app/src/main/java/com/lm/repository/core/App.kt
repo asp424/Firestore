@@ -11,10 +11,7 @@ class App : Application() {
 
     val appComponent by lazy { DaggerAppComponent.builder().application(this).create() }
 
-    val regComponentBuilder: RegComponent.Builder by lazy { DaggerRegComponent.builder() }
-
 }
 
 val MainActivity.appComponent get() = (applicationContext as App).appComponent
 
-val RegistrationActivity.regComponentBuilder get() = (applicationContext as App).regComponentBuilder
