@@ -28,7 +28,7 @@ fun RegScreen(
 ) {
     var phone by remember { mutableStateOf("") }
     var code by remember { mutableStateOf("") }
-    var id by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
     var buttonText by remember { mutableStateOf("Start auth") }
     var visibleCode by remember { mutableStateOf(false) }
     var visiblePhone by remember { mutableStateOf(true) }
@@ -43,7 +43,7 @@ fun RegScreen(
             OutlinedTextField(value = code, onValueChange = { code = it })
         }
 
-        Text(text = id, modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
+        Text(text = error, modifier = Modifier.padding(10.dp))
         Button(onClick = {
             if (buttonText == "Start auth")
                 coroutine.launch {
@@ -57,7 +57,7 @@ fun RegScreen(
 
                             is RegResponse.SmsCode -> code = it.smsCode.toString()
 
-                            is RegResponse.OnError -> id = it.exception.toString()
+                            is RegResponse.OnError -> error = it.exception.toString()
 
                             is RegResponse.RegId -> {
                                 buttonText = "Enter code"
@@ -77,7 +77,7 @@ fun RegScreen(
                             it.uid.toString()
                         )
 
-                        is RegResponse.OnError -> id = it.exception.toString()
+                        is RegResponse.OnError -> error = it.exception.toString()
 
                         else -> Unit
                     }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -69,8 +70,9 @@ import kotlin.coroutines.suspendCoroutine
         runCatching { task.addOnSuccessListener { cont.resume(it) } }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun <T> runFlow(task: Task<T>): Flow<Resource<T>> = callbackFlow {
-        trySendBlocking(Resource.Success(runTask(task)))
+        runCatching {  trySendBlocking(Resource.Success(runTask(task))) }
         awaitClose()
     }
 
