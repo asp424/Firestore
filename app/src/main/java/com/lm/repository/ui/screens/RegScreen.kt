@@ -1,7 +1,6 @@
 package com.lm.repository.ui.screens
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
@@ -50,7 +49,11 @@ fun RegScreen(
                 coroutine.launch {
                     viewModel.startAuth(phone, 60L).collect {
                         when (it) {
-                            is RegResponse.OnSuccess -> startMainActivity(registrationActivity)
+                            is RegResponse.OnSuccess -> startMainActivity(
+                                registrationActivity,
+                                sharedPrefProvider,
+                                it.uid.toString()
+                            )
 
                             is RegResponse.SmsCode -> code = it.smsCode.toString()
 
@@ -68,7 +71,11 @@ fun RegScreen(
             else coroutine.launch {
                 viewModel.authWithCode(sharedPrefProvider.read(), code).collect {
                     when (it) {
-                        is RegResponse.OnSuccess -> startMainActivity(registrationActivity)
+                        is RegResponse.OnSuccess -> startMainActivity(
+                            registrationActivity,
+                            sharedPrefProvider,
+                            it.uid.toString()
+                        )
 
                         is RegResponse.OnError -> id = it.exception.toString()
 
@@ -82,7 +89,12 @@ fun RegScreen(
     }
 }
 
-private fun startMainActivity(registrationActivity: RegistrationActivity){
+private fun startMainActivity(
+    registrationActivity: RegistrationActivity,
+    sharedPrefProvider: SharedPrefProvider, uid: String
+) {
+    sharedPrefProvider.save(uid)
+
     registrationActivity.apply {
         startActivity(Intent(this, MainActivity::class.java))
         finish()

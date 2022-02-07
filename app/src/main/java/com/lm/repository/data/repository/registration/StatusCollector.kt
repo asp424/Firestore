@@ -22,11 +22,13 @@ interface StatusCollector {
             when (response) {
 
                 is RegResponse.Credential -> {
-                    onDone(RegResponse.SmsCode(response.credential.smsCode.toString()))
+                    onDone(RegResponse.SmsCode(response.credential?.smsCode.toString()))
                     with(auth.currentUser?.uid) {
                         if (this == null) CoroutineScope(dispatcher).launch {
-                            authRepository.authWithCredential(response.credential)
-                                .collect { onDone(it) }
+                            response.credential?.let { cred ->
+                                authRepository.authWithCredential(cred)
+                                    .collect { onDone(it) }
+                            }
                         }
                         else onDone(RegResponse.OnSuccess(this))
                     }

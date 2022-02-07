@@ -29,7 +29,8 @@ interface RegRepository {
                     phoneAuthOptionsBuilder
                         .setPhoneNumber(phone)
                         .setTimeout(timeOut, TimeUnit.SECONDS)
-                        .setCallbacks(RegCallback { response ->
+                        .setCallbacks(
+                            RegCallback { response ->
                             statusCollector.collect(response) { trySendBlocking(it) }
                         }).build()
                 )
