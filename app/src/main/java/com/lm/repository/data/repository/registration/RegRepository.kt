@@ -33,8 +33,8 @@ interface RegRepository {
                             statusCollector.collect(response) { trySendBlocking(it) }
                         }).build()
                 )
-                awaitClose()
             }
+            awaitClose()
         }
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
