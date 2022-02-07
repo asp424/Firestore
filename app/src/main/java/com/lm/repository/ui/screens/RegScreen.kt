@@ -50,17 +50,13 @@ fun RegScreen(
                 coroutine.launch {
                     viewModel.startAuth(phone, 60L).collect {
                         when (it) {
-                            is RegResponse.OnSuccess -> {
-                                id = it.uid.toString()
-                                startMainActivity(registrationActivity)
-                            }
+                            is RegResponse.OnSuccess -> startMainActivity(registrationActivity)
 
                             is RegResponse.SmsCode -> code = it.smsCode.toString()
 
                             is RegResponse.OnError -> id = it.exception.toString()
 
                             is RegResponse.RegId -> {
-                                id = it.id.toString()
                                 buttonText = "Enter code"
                                 visiblePhone = false
                                 visibleCode = true
@@ -72,10 +68,8 @@ fun RegScreen(
             else coroutine.launch {
                 viewModel.authWithCode(sharedPrefProvider.read(), code).collect {
                     when (it) {
-                        is RegResponse.OnSuccess -> {
-                            id = it.uid.toString()
-                            startMainActivity(registrationActivity)
-                        }
+                        is RegResponse.OnSuccess -> startMainActivity(registrationActivity)
+
                         is RegResponse.OnError -> id = it.exception.toString()
 
                         else -> Unit
