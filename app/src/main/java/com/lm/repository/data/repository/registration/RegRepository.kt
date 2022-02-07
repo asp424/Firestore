@@ -1,7 +1,8 @@
-package com.lm.repository.data.repository.regrepository
+package com.lm.repository.data.repository.registration
 
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -21,21 +22,22 @@ interface RegRepository {
         private val authRepository: AuthRepository
     ) : RegRepository {
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         override suspend fun startAuth(phone: String, timeOut: Long) = callbackFlow {
-                runCatching {
-                    PhoneAuthProvider.verifyPhoneNumber(
-                        phone.options.setTimeout(timeOut, TimeUnit.SECONDS)
-                            .setCallbacks(RegCallback { response ->
-                                statusCollector.collect(response) { trySendBlocking(it) }
-                            }).build()
-                    )
-                    awaitClose()
-                }
+            runCatching {
+                PhoneAuthProvider.verifyPhoneNumber(
+                    phoneAuthOptionsBuilder
+                        .setPhoneNumber(phone)
+                        .setTimeout(timeOut, TimeUnit.SECONDS)
+                        .setCallbacks(RegCallback { response ->
+                            statusCollector.collect(response) { trySendBlocking(it) }
+                        }).build()
+                )
+                awaitClose()
             }
+        }
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
             authRepository.authWithCode(id, code)
-
-        private val String.options get() = phoneAuthOptionsBuilder.setPhoneNumber(this)
     }
 }

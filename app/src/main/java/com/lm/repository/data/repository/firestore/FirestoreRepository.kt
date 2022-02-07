@@ -14,7 +14,7 @@ interface FirestoreRepository {
         onSuccess: () -> Unit
     )
 
-    suspend fun takeAllDocumentsInCollection(path: FirePath): Flow<Resource<QuerySnapshot?>>
+    suspend fun allDocumentsInCollection(path: FirePath): Flow<Resource<QuerySnapshot?>>
 
     suspend fun dataFromDocument(path: FirePath): Flow<Resource<DocumentSnapshot?>>
 

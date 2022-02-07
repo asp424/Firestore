@@ -12,7 +12,7 @@ class FirestoreRepositoryImpl @Inject constructor(private val fireStoreSource: F
         onSuccess: () -> Unit
     ) = with(fireStoreSource){ putDataToDocument(path, data) { onSuccess() } }
 
-    override suspend fun takeAllDocumentsInCollection(path: FirePath) =
+    override suspend fun allDocumentsInCollection(path: FirePath) =
         with(fireStoreSource) { takeAllDocumentsInCollection(path) }
 
     override suspend fun dataFromDocument(path: FirePath) =

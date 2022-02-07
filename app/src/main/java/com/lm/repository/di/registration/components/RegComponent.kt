@@ -1,8 +1,12 @@
 package com.lm.repository.di.registration.components
 
+import android.content.SharedPreferences
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import com.lm.repository.RegistrationActivity
+import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.di.app.components.AppComponent
+import com.lm.repository.di.app.modules.SharedPrefProviderModule
 import com.lm.repository.di.registration.modules.AuthRepositoryModule
 import com.lm.repository.di.registration.modules.RegRepositoryModule
 import com.lm.repository.di.registration.modules.RegViewModelFactoryModule
@@ -16,7 +20,9 @@ import javax.inject.Singleton
 @Component(
     modules = [RegRepositoryModule::class,
         RegViewModelFactoryModule::class,
-        StatusCollectorModule::class, AuthRepositoryModule::class]
+        StatusCollectorModule::class,
+        AuthRepositoryModule::class,
+        SharedPrefProviderModule::class]
 )
 @Singleton
 interface RegComponent {
@@ -32,13 +38,14 @@ interface RegComponent {
         @BindsInstance
         fun dispatcher(dispatcher: CoroutineDispatcher): Builder
 
+        @BindsInstance
+        fun sharedPreferences(sharedPreferences: SharedPreferences): Builder
+
         fun create(): RegComponent
     }
 
-    fun inject(regActivity: RegistrationActivity)
-
-    fun authInstance(): FirebaseAuth
-
     fun viewModelFactory(): ViewModelFactory
+
+    fun sharedPreferences(): SharedPrefProvider
 
 }

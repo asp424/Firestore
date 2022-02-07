@@ -1,6 +1,7 @@
 package com.lm.repository.di.app.components
 
 import android.app.Application
+import android.content.SharedPreferences
 import com.lm.repository.MainActivity
 import com.lm.repository.di.app.mapmodule.MapModule
 import dagger.BindsInstance
@@ -14,6 +15,7 @@ interface AppComponent {
     interface Builder{
         @BindsInstance
         fun application(application: Application): Builder
+
         fun create(): AppComponent
     }
 

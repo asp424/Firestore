@@ -1,10 +1,13 @@
-package com.lm.repository.data.repository.regrepository
+package com.lm.repository.data.repository.registration
 
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.lm.repository.core.SharedPrefProvider
 
-class RegCallback(private val result: (RegResponse) -> Unit) :
+class RegCallback(
+    private val result: (RegResponse) -> Unit
+) :
     PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -16,5 +19,4 @@ class RegCallback(private val result: (RegResponse) -> Unit) :
 
     override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) =
         result(RegResponse.RegId(id))
-
 }

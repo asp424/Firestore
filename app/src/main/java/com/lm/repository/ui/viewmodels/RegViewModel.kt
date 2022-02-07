@@ -2,9 +2,8 @@ package com.lm.repository.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lm.repository.data.repository.regrepository.RegRepository
-import com.lm.repository.data.repository.regrepository.RegResponse
-import kotlinx.coroutines.CoroutineDispatcher
+import com.lm.repository.data.repository.registration.RegRepository
+import com.lm.repository.data.repository.registration.RegResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -13,7 +12,6 @@ import javax.inject.Inject
 class RegViewModel @Inject constructor(
     private val regRepository: RegRepository
 ) : ViewModel() {
-
 
     suspend fun startAuth(phone: String, timeOut: Long): StateFlow<RegResponse> =
         with(regRepository) {

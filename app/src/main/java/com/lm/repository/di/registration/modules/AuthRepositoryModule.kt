@@ -1,7 +1,6 @@
 package com.lm.repository.di.registration.modules
 
-import com.lm.repository.data.repository.regrepository.AuthRepository
-import com.lm.repository.data.repository.regrepository.RegRepository
+import com.lm.repository.data.repository.registration.AuthRepository
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

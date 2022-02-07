@@ -1,4 +1,4 @@
-package com.lm.repository.data.repository.regrepository
+package com.lm.repository.data.repository.registration
 
 import com.google.firebase.auth.PhoneAuthCredential
 

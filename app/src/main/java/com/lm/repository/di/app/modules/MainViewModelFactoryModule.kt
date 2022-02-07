@@ -1,4 +1,4 @@
-package com.lm.repository.di.main.modules
+package com.lm.repository.di.app.modules
 
 import androidx.lifecycle.ViewModelProvider
 import com.lm.repository.di.app.modules.MainViewModelModule

@@ -1,6 +1,6 @@
 package com.lm.repository.di.registration.modules
 
-import com.lm.repository.data.repository.regrepository.StatusCollector
+import com.lm.repository.data.repository.registration.StatusCollector
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

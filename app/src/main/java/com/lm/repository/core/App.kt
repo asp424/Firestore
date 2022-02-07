@@ -9,7 +9,8 @@ import com.lm.repository.di.registration.components.RegComponent
 
 class App : Application() {
 
-    val appComponent by lazy { DaggerAppComponent.builder().application(this).create() }
+    val appComponent by lazy { DaggerAppComponent.builder().application(this)
+        .create() }
 
 }
 

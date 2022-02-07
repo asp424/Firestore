@@ -24,8 +24,8 @@ class MainViewModel @Inject constructor(private val repository: FirestoreReposit
     }
 
     @ExperimentalCoroutinesApi
-    suspend fun takeAllDocumentsInCollection(path: FirePath): StateFlow<Resource<QuerySnapshot?>> =
-        with(repository){ takeAllDocumentsInCollection(path).flatMapLatest { flowOf(it) }.stateIn(
+    suspend fun allDocumentsInCollection(path: FirePath): StateFlow<Resource<QuerySnapshot?>> =
+        with(repository){ allDocumentsInCollection(path).flatMapLatest { flowOf(it) }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = Resource.Loading
