@@ -24,9 +24,9 @@ class MainViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
-    override fun onStart(owner: LifecycleOwner) {
-        super.onStart(owner)
-       timer()
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        startTimer()
     }
 
     fun putDataToDocument(
@@ -77,13 +77,15 @@ class MainViewModel @Inject constructor(
             with(repository) { deleteCollection(path) { onSuccess() } }
         }
 
-    private fun timer() {
+    private fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch(dispatcher) {
             (0 until 1000).asSequence().asFlow().onEach { delay(3_000) }
                 .collect { _pagerState.value = it }
         }
     }
+
+    fun stopTimer() = timerJob?.cancel()
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)

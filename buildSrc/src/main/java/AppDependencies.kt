@@ -37,6 +37,7 @@ fun DependencyHandlerScope.impl() {
     addD(dep = "androidx.core:core-ktx:1.7.0")
     addD(dep = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     addD(dep = "androidx.appcompat:appcompat:1.4.1")
+    addD(dep = "com.google.android.material:material:1.6.0-alpha02")
 
 
 //Lifecycle
