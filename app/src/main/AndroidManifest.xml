@@ -14,12 +14,14 @@
         android:theme="@style/Theme.Repository">
         <activity
             android:name="com.lm.repository.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name="com.lm.repository.RegistrationActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

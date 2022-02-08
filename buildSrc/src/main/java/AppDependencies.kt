@@ -13,11 +13,15 @@ fun DependencyHandlerScope.impl() {
     //Compose
     with(composeCompilerVersion) {
         listOf(
+            "androidx.compose.ui:ui:$this",
+            "androidx.compose.ui:ui-tooling:$this",
             "androidx.compose.compiler:compiler:$this",
             "androidx.compose.foundation:foundation:$this",
             "androidx.compose.material:material:$this",
             "androidx.compose.material:material-icons-core:$this",
             "androidx.compose.material:material-icons-extended:$this",
+            "com.google.accompanist:accompanist-pager-indicators:0.24.1-alpha",
+            "com.google.accompanist:accompanist-pager:0.24.1-alpha"
         ).forEach { addD(dep = it) }
     }
     addD(dep = "androidx.activity:activity-compose:1.4.0")

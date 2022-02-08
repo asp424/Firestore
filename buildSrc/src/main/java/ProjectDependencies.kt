@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.delegates.ProjectDelegate
 import java.io.File
 
-private fun RepositoryHandler.repository() {
+fun RepositoryHandler.myRepository() {
     google()
     mavenCentral()
     listOf("https://jitpack.io", "https://maven.google.com").forEach { maven(it) }
@@ -16,7 +16,7 @@ private fun RepositoryHandler.repository() {
 fun builder(value: Any, file: File? = null) {
     when (value) {
         is ScriptHandler -> {
-            value.repositories.repository()
+            value.repositories.myRepository()
             value.dependencies.apply {
                 listOf(
                     "com.android.tools.build:gradle:7.1.0",
@@ -26,7 +26,7 @@ fun builder(value: Any, file: File? = null) {
             }
         }
 
-        is Project -> value.repositories.repository()
+        is Project -> value.repositories.myRepository()
         is ProjectDelegate -> value.tasks.register("type", Delete::class) { delete(file) }
     }
 }
