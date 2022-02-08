@@ -1,23 +1,27 @@
 package com.lm.repository.di.app.components
 
-import android.app.Application
 import android.content.SharedPreferences
-import com.lm.repository.MainActivity
-import com.lm.repository.di.app.mapmodule.MapModule
+import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.di.app.mapmodule.AppMapModule
+import com.lm.repository.di.registration.components.RegComponent
+import com.lm.repository.ui.viewmodelsfactory.ViewModelFactory
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
-@Component(modules = [MapModule::class])
+@Component(modules = [AppMapModule::class])
 @Singleton
 interface AppComponent {
     @Component.Builder
-    interface Builder{
+    interface Builder {
+
         @BindsInstance
-        fun application(application: Application): Builder
+        fun sharedPreferences(sharedPreferences: SharedPreferences): Builder
 
         fun create(): AppComponent
     }
 
-    fun inject(mainActivity: MainActivity)
+    fun viewModelFactory(): ViewModelFactory
+
+    fun sharedPreferences(): SharedPrefProvider
 }

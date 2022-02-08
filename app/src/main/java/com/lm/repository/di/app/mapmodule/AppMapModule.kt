@@ -9,6 +9,7 @@ import dagger.Module
 @Module(
     includes = [FirestoreSourceModule::class,
         MainViewModelFactoryModule::class,
-        FirestoreRepositoryModule::class]
+        FirestoreRepositoryModule::class,
+    SharedPrefProviderModule::class]
 )
-class MapModule
+class AppMapModule

@@ -36,16 +36,24 @@ fun RegScreen(
 
     ColumnFMS {
         Visibility(visible = visiblePhone) {
-            OutlinedTextField(value = phone, onValueChange = { phone = it })
+            OutlinedTextField(value = phone, onValueChange = {
+                error = ""
+                phone = it
+            })
         }
 
         Visibility(visible = visibleCode) {
-            OutlinedTextField(value = code, onValueChange = { code = it })
+            OutlinedTextField(value = code, onValueChange = {
+                error = ""
+                code = it
+            })
         }
 
         Text(text = error, modifier = Modifier.padding(10.dp))
+
         Button(onClick = {
             if (buttonText == "Start auth")
+                if (phone.replace(" ", "").length == 12)
                 coroutine.launch {
                     viewModel.startAuth(phone, 60L).collect {
                         when (it) {
@@ -60,7 +68,7 @@ fun RegScreen(
                             is RegResponse.OnError -> error = it.exception.toString()
 
                             is RegResponse.RegId -> {
-                                buttonText = "Enter code"
+                                buttonText = "Send code"
                                 visiblePhone = false
                                 visibleCode = true
                             }
@@ -68,7 +76,10 @@ fun RegScreen(
                         }
                     }
                 }
-            else coroutine.launch {
+            else error = "Phone number must be 12 characters long "
+
+            else if (code.replace(" ", "").length == 6)
+                coroutine.launch {
                 viewModel.authWithCode(sharedPrefProvider.read(), code).collect {
                     when (it) {
                         is RegResponse.OnSuccess -> startMainActivity(
@@ -83,6 +94,7 @@ fun RegScreen(
                     }
                 }
             }
+            else error = "Code must be 6 characters long "
         }) {
             Text(text = buttonText)
         }
