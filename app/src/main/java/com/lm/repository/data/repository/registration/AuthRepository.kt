@@ -16,6 +16,8 @@ interface AuthRepository {
 
     suspend fun authWithCredential(credential: PhoneAuthCredential): Flow<RegResponse>
 
+    fun signOut()
+
     class Base @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
@@ -34,5 +36,8 @@ interface AuthRepository {
 
             awaitClose()
         }
+
+        override fun signOut() = auth.signOut()
+
     }
 }

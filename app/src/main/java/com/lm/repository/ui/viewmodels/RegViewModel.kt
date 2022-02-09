@@ -30,4 +30,6 @@ class RegViewModel @Inject constructor(
                 initialValue = RegResponse.StartAuth
             )
         }
+
+    fun signOut() = regRepository.signOut()
 }

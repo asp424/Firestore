@@ -43,6 +43,7 @@ class MainViewModel @Inject constructor(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue = Resource.Loading
+
             )
         }
 

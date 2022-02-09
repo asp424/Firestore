@@ -1,13 +1,10 @@
 package com.lm.repository.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -73,7 +70,8 @@ fun RegScreen(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(180.dp).padding(top = 20.dp)
+                .height(180.dp)
+                .padding(top = 20.dp)
         )
         Card(
             modifier = Modifier
@@ -81,10 +79,7 @@ fun RegScreen(
                 .padding(top = 40.dp),
             backgroundColor = Purple700
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            ColumnFMS {
                 Text(
                     text = text1, modifier = Modifier.padding(bottom = 2.dp),
                     fontWeight = FontWeight.Bold, color = Yellow
@@ -166,7 +161,9 @@ fun RegScreen(
                                 cursorColor = Green,
                                 focusedBorderColor = Purple700
                             ),
-                            modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2).padding(bottom = 10.dp),
+                            modifier = Modifier
+                                .width(LocalConfiguration.current.screenWidthDp.dp / 2)
+                                .padding(bottom = 10.dp),
                             textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 18.sp),
                             placeholder = {
                                 Row(
@@ -221,30 +218,44 @@ fun RegScreen(
                                                         sharedPrefProvider.save(it1)
                                                     }
                                                     mainViewModel.dataFromDocumentV(
-                                                        FirePath("admin", "phones"
+                                                        FirePath(
+                                                            "admin", "phones"
                                                         )
                                                     )
                                                         .collect { map ->
                                                             if (map is Resource.Success) {
                                                                 if (map.data?.data?.containsValue(
                                                                         phone.replace(" ", "")
-                                                                    ) == true&& map.data.data!!.getValue(
-                                                                        checkNotNull(it.uid)) == phone.replace(" ",
-                                                                        "")
+                                                                    ) == true && map.data.data!!.getValue(
+                                                                        checkNotNull(it.uid)
+                                                                    ) == phone.replace(
+                                                                        " ",
+                                                                        ""
+                                                                    )
                                                                 ) {
                                                                     mainViewModel.dataFromDocumentV(
                                                                         FirePath(
-                                                                            "users", sharedPrefProvider.read())
+                                                                            "users",
+                                                                            sharedPrefProvider.read()
+                                                                        )
                                                                     ).collect { a ->
-                                                                        if ( a is Resource.Success) {
+                                                                        if (a is Resource.Success) {
                                                                             visible = false
                                                                             a.data?.data?.get("name")
-                                                                                ?.let { it1 -> regCallback(it, it1.toString()) }
+                                                                                ?.let { it1 ->
+                                                                                    regCallback(
+                                                                                        it,
+                                                                                        it1.toString()
+                                                                                    )
+                                                                                }
                                                                         }
                                                                     }
                                                                 } else {
                                                                     mainViewModel.putDataToDocument(
-                                                                        FirePath("users", sharedPrefProvider.read()),
+                                                                        FirePath(
+                                                                            "users",
+                                                                            sharedPrefProvider.read()
+                                                                        ),
                                                                         hashMapOf(
                                                                             "phone" to phone,
                                                                             "uid" to sharedPrefProvider.read()
@@ -312,23 +323,36 @@ fun RegScreen(
                                                                 if (map.data?.data?.containsValue(
                                                                         phone.replace(" ", "")
                                                                     ) == true && map.data.data!!.getValue(
-                                                                        checkNotNull(it.uid)) == phone.replace(" ",
-                                                                        "")
+                                                                        checkNotNull(it.uid)
+                                                                    ) == phone.replace(
+                                                                        " ",
+                                                                        ""
+                                                                    )
                                                                 ) {
                                                                     mainViewModel.dataFromDocumentV(
                                                                         FirePath(
-                                                                            "users", sharedPrefProvider.read())
+                                                                            "users",
+                                                                            sharedPrefProvider.read()
+                                                                        )
 
                                                                     ).collect { a ->
-                                                                        if ( a is Resource.Success) {
+                                                                        if (a is Resource.Success) {
                                                                             visible = false
                                                                             a.data?.data?.get("name")
-                                                                                ?.let { it1 -> regCallback(it, it1.toString()) }
+                                                                                ?.let { it1 ->
+                                                                                    regCallback(
+                                                                                        it,
+                                                                                        it1.toString()
+                                                                                    )
+                                                                                }
                                                                         }
                                                                     }
                                                                 } else {
                                                                     mainViewModel.putDataToDocument(
-                                                                        FirePath("users", sharedPrefProvider.read()),
+                                                                        FirePath(
+                                                                            "users",
+                                                                            sharedPrefProvider.read()
+                                                                        ),
                                                                         hashMapOf(
                                                                             "phone" to phone,
                                                                             "uid" to sharedPrefProvider.read()
@@ -363,8 +387,10 @@ fun RegScreen(
                             "ОТПРАВИТЬ" -> if (name.isNotEmpty())
                                 coroutine.launch {
                                     error = ""
-                                    mainViewModel.putDataToDocument(FirePath("admin", "phones"),
-                                        hashMapOf(sharedPrefProvider.read() to phone)){
+                                    mainViewModel.putDataToDocument(
+                                        FirePath("admin", "phones"),
+                                        hashMapOf(sharedPrefProvider.read() to phone)
+                                    ) {
                                         mainViewModel.putDataToDocument(
                                             FirePath("users", sharedPrefProvider.read()),
                                             hashMapOf(
@@ -373,7 +399,10 @@ fun RegScreen(
                                                 "uid" to sharedPrefProvider.read()
                                             )
                                         ) {
-                                            regCallback(RegResponse.OnSuccess(sharedPrefProvider.read()), "")
+                                            regCallback(
+                                                RegResponse.OnSuccess(sharedPrefProvider.read()),
+                                                ""
+                                            )
                                         }
                                     }
                                 }

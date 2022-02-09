@@ -14,6 +14,7 @@
         android:theme="@style/Theme.Repository">
         <activity
             android:name="com.lm.repository.MainActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

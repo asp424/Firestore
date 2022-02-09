@@ -1,10 +1,8 @@
 package com.lm.repository.ui.screens
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,9 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
@@ -41,6 +38,7 @@ import com.lm.repository.MainActivity
 import com.lm.repository.R
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.theme.back
+import com.lm.repository.ui.cells.BottomSheet
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -66,6 +64,14 @@ private val listButtons = listOf(
     "БОНУСНАЯ КАРТА"
 )
 
+private val listButtonsNav = listOf(
+    "Delivery",
+    "Restaurants",
+    "Menu",
+    "Booking",
+    "BonusCard"
+)
+
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(
     ExperimentalCoroutinesApi::class, com.google.accompanist.pager.ExperimentalPagerApi::class,
@@ -76,23 +82,24 @@ fun MainScreen(
     mainViewModel: MainViewModel,
     regViewModel: RegViewModel,
     sharedPreferences: SharedPrefProvider,
-    firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth,
+    navController: NavHostController
 ) {
     val pagerState = rememberPagerState()
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val mainActivity = LocalContext.current as MainActivity
     val coroutine = rememberCoroutineScope()
-    var text by remember{ mutableStateOf("") }
+    val t by remember { mutableStateOf("") }
+    var bottomContent by remember { mutableStateOf("reg") }
 
-    LaunchedEffect(coroutine) {
-        (0 until 1000).asSequence().asFlow().onEach { delay(3_000) }
-            .collect {
-                pagerState.apply {
-                    if (currentPage == list.lastIndex) animateScrollToPage(0)
-                    else animateScrollToPage(currentPage + 1)
-                }
+    LaunchedEffect(t) {
+        (0 until 1000).asFlow().onEach { delay(3_000) }.collect {
+            pagerState.apply {
+                if (currentPage == list.lastIndex) animateScrollToPage(0)
+                else animateScrollToPage(currentPage + 1)
             }
+        }
     }
 
     ModalDrawer(drawerContent = {
@@ -139,13 +146,16 @@ fun MainScreen(
                 modifier = Modifier
                     .size(30.dp)
                     .clickable {
-                        coroutine.launch {
-                            if (bottomSheetState.isVisible) {
-                                bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
-                            } else {
-                                bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                        bottomContent = "reg"
+                        if (firebaseAuth.currentUser == null)
+                            coroutine.launch {
+                                if (bottomSheetState.isVisible) {
+                                    bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
+                                } else {
+                                    bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                }
                             }
-                        }
+                        else navController.navigate("UserInfo")
                     }
             )
         }
@@ -175,11 +185,26 @@ fun MainScreen(
             Text(text = "XXXXXXXXXXXXXXXXX", modifier = Modifier.padding(top = 20.dp))
 
             Column(modifier = Modifier.padding(top = 20.dp)) {
-                listButtons.forEach {
+                listButtons.forEachIndexed { i, it ->
                     Button(
-                        onClick = { }, modifier = Modifier
+                        onClick = {
+                            when(listButtonsNav[i]){
+                                "BonusCard" -> bottomContent = "bonusCard"
+                                "Booking" -> bottomContent = "booking"
+                            }
+                            if (listButtonsNav[i] ==  "BonusCard" || listButtonsNav[i] ==  "Booking")
+                            coroutine.launch {
+                                if (bottomSheetState.isVisible) {
+                                    bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
+                                } else {
+                                    bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                }
+                            }
+                            else navController.navigate(listButtonsNav[i])
+                             }, modifier = Modifier
                             .padding(bottom = 10.dp)
-                            .width(250.dp)
+                            .width(LocalConfiguration.current.screenWidthDp.dp)
+                            .padding(start = 40.dp, end = 40.dp)
                             .height(LocalConfiguration.current.screenHeightDp.dp / 19),
                         colors = ButtonDefaults.buttonColors(backgroundColor = back)
                     ) {
@@ -254,47 +279,16 @@ fun MainScreen(
             }
         }
 
-        ModalBottomSheetLayout(
-            sheetContent = {
-                Card(
-                    shape = RoundedCornerShape(20.dp), border = BorderStroke(4.dp, Black),
-                    modifier = Modifier.fillMaxSize().padding(start = 1.dp, end = 1.dp, bottom = 16.dp)
-                ) {
-                    if (firebaseAuth.currentUser?.uid == null) {
-                        RegScreen(
-                            viewModel = regViewModel,
-                            mainViewModel = mainViewModel,
-                            sharedPrefProvider = sharedPreferences,
-                            regCallback = { res, name ->
-                                coroutine.launch {
-                                    bottomSheetState.hide()
-                                    if (name.isNotEmpty())
-                                    Toast.makeText(mainActivity, "С возвращением, $name!", Toast.LENGTH_LONG)
-                                        .show()
-                                    else Toast.makeText(mainActivity, "Вы зарегестрированы", Toast.LENGTH_LONG)
-                                        .show()
-                                    text = "0"
-                                }
-                            }
-                        )
-                    } else {
-                        UserInfo(mainViewModel, sharedPreferences)
-                    }
+        BottomSheet(firebaseAuth, mainViewModel, regViewModel, sharedPreferences, navController, bottomSheetState, bottomContent)
+
+        BackHandler {
+            if (bottomSheetState.isVisible || drawerState.isOpen)
+                coroutine.launch {
+                    bottomSheetState.hide()
+                    drawerState.animateTo(DrawerValue.Closed, tween(500))
                 }
-            }, sheetState = bottomSheetState, sheetShape = RoundedCornerShape(20.dp),
-            modifier = Modifier.padding(top = 80.dp), sheetBackgroundColor = Gray
-        ) {
+            else mainActivity.finish()
         }
     })
-
-    BackHandler {
-        if (bottomSheetState.isVisible || drawerState.isOpen)
-        coroutine.launch {
-            bottomSheetState.hide()
-            drawerState.animateTo(DrawerValue.Closed, tween(500))
-        }
-        else mainActivity.finish()
-    }
-    Text(text = text, fontSize = 1.sp)
 }
 

@@ -5,7 +5,7 @@ android {
     compileSdk = 31
     defaultConfig {
         applicationId = "com.lm.repository"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"

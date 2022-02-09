@@ -22,7 +22,8 @@ fun DependencyHandlerScope.impl() {
             "androidx.compose.material:material-icons-extended:$this",
             "com.google.accompanist:accompanist-pager-indicators:0.24.1-alpha",
             "com.google.accompanist:accompanist-pager:0.24.1-alpha",
-            "androidx.navigation:navigation-compose:2.4.0"
+            "com.google.accompanist:accompanist-navigation-animation:0.24.1-alpha",
+            "androidx.compose.animation:animation:$this"
         ).forEach { addD(dep = it) }
     }
     addD(dep = "androidx.activity:activity-compose:1.4.0")

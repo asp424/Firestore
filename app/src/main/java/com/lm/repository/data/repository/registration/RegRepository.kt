@@ -16,6 +16,8 @@ interface RegRepository {
 
     suspend fun authWithCode(id: String, code: String): Flow<RegResponse>
 
+    fun signOut()
+
     class Base @Inject constructor(
         private val phoneAuthOptionsBuilder: PhoneAuthOptions.Builder,
         private val statusCollector: StatusCollector,
@@ -40,5 +42,8 @@ interface RegRepository {
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
             authRepository.authWithCode(id, code)
+
+        override fun signOut() = authRepository.signOut()
+
     }
 }
