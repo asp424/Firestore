@@ -16,18 +16,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val repository: FirestoreRepository,
     private val dispatcher: CoroutineDispatcher
-) : ViewModel(),
-    DefaultLifecycleObserver {
-
-    private val _pagerState = MutableStateFlow(0)
-    val pagerState get() = _pagerState
-
-    private var timerJob: Job? = null
-
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        startTimer()
-    }
+) : ViewModel() {
 
     fun putDataToDocument(
         path: FirePath,
@@ -76,19 +65,4 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             with(repository) { deleteCollection(path) { onSuccess() } }
         }
-
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch(dispatcher) {
-            (0 until 1000).asSequence().asFlow().onEach { delay(3_000) }
-                .collect { _pagerState.value = it }
-        }
     }
-
-    fun stopTimer() = timerJob?.cancel()
-
-    override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
-       timerJob?.cancel()
-    }
-}

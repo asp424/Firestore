@@ -8,7 +8,7 @@ import dagger.Binds
 import dagger.Module
 
 @Module(
-    includes = [MainViewModelModule::class]
+    includes = [MainViewModelModule::class, RegViewModelModule::class]
 )
 interface MainViewModelFactoryModule {
 

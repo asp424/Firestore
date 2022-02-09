@@ -1,9 +1,10 @@
 package com.lm.repository.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,22 +38,27 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthOptions
 import com.lm.repository.MainActivity
 import com.lm.repository.R
 import com.lm.repository.core.SharedPrefProvider
-import com.lm.repository.data.repository.registration.RegResponse
-import com.lm.repository.di.registration.components.DaggerRegComponent
 import com.lm.repository.theme.back
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
-val list = listOf(R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.e, R.drawable.d)
+val list = listOf(
+    R.drawable.a,
+    R.drawable.b,
+    R.drawable.c,
+    R.drawable.e,
+    R.drawable.d
+)
 private val listButtons = listOf(
     "ДОСТАВКА И САМОВЫВОЗ",
     "РЕСТОРАНЫ",
@@ -67,25 +73,27 @@ private val listButtons = listOf(
     ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class
 )
 @Composable
-fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvider) {
+fun MainScreen(
+    mainViewModel: MainViewModel,
+    regViewModel: RegViewModel,
+    sharedPreferences: SharedPrefProvider,
+    firebaseAuth: FirebaseAuth
+) {
     val pagerState = rememberPagerState()
-    val pageState by mainViewModel.pagerState.collectAsState()
-    var visible by remember { mutableStateOf(true) }
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val mainActivity = LocalContext.current as MainActivity
     val coroutine = rememberCoroutineScope()
-    LocalLifecycleOwner.current.apply {
-        LaunchedEffect(this) {
-            lifecycle.addObserver(mainViewModel)
-        }
-    }
+    var text by remember{ mutableStateOf("") }
 
-    LaunchedEffect(pageState) {
-        pagerState.apply {
-            if (currentPage == list.lastIndex) animateScrollToPage(0)
-            else animateScrollToPage(currentPage + 1)
-        }
+    LaunchedEffect(coroutine) {
+        (0 until 1000).asSequence().asFlow().onEach { delay(3_000) }
+            .collect {
+                pagerState.apply {
+                    if (currentPage == list.lastIndex) animateScrollToPage(0)
+                    else animateScrollToPage(currentPage + 1)
+                }
+            }
     }
 
     ModalDrawer(drawerContent = {
@@ -105,7 +113,7 @@ fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvid
                     .size(30.dp)
                     .clickable {
                         coroutine.launch {
-                            drawerState.open()
+                            drawerState.animateTo(DrawerValue.Open, tween(500))
                         }
                     },
                 tint = DarkGray
@@ -133,9 +141,11 @@ fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvid
                     .size(30.dp)
                     .clickable {
                         coroutine.launch {
-                            if (bottomSheetState.isVisible)
+                            if (bottomSheetState.isVisible) {
                                 bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
-                            else bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                            } else {
+                                bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                            }
                         }
                     }
             )
@@ -221,9 +231,7 @@ fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvid
                 painter = painterResource(id = R.drawable.ass),
                 contentDescription = null, modifier = Modifier
                     .padding(top = 20.dp)
-                    .width(
-                        LocalConfiguration.current.screenWidthDp.dp
-                    )
+                    .width(LocalConfiguration.current.screenWidthDp.dp)
                     .height(70.dp)
             )
             Row(
@@ -249,11 +257,26 @@ fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvid
                     shape = RoundedCornerShape(20.dp), border = BorderStroke(2.dp, Black),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    CheckForAuth(mainActivity = mainActivity) {
-                        coroutine.launch {
-                            bottomSheetState.hide()
-                            Toast.makeText(mainActivity, "Вы вошли", Toast.LENGTH_LONG).show()
-                        }
+                    if (firebaseAuth.currentUser?.uid == null) {
+                        RegScreen(
+                            viewModel = regViewModel,
+                            mainViewModel = mainViewModel,
+                            sharedPrefProvider = sharedPreferences,
+                            regCallback = { res, name ->
+                                coroutine.launch {
+                                    bottomSheetState.hide()
+                                    if (name.isNotEmpty())
+                                    Toast.makeText(mainActivity, "С возвращением, $name!", Toast.LENGTH_LONG)
+                                        .show()
+                                    else Toast.makeText(mainActivity, "Вы зарегестрированы", Toast.LENGTH_LONG)
+                                        .show()
+                                    text = "0"
+                                }
+                            }
+                        )
+                    } else {
+                        Text("Fuck")
+                        Log.d("My", "ppp")
                     }
                 }
             }, sheetState = bottomSheetState, sheetShape = RoundedCornerShape(20.dp),
@@ -261,41 +284,15 @@ fun MainScreen(mainViewModel: MainViewModel, sharedPreferences: SharedPrefProvid
         ) {
         }
     })
-}
 
-@Composable
-@OptIn(ExperimentalCoroutinesApi::class)
-private fun CheckForAuth(
-    mainActivity: MainActivity, regCallback: (RegResponse) -> Unit
-) {
-    FirebaseAuth.getInstance().apply {
-        if (currentUser != null) {
-
-        } else
-            DaggerRegComponent.builder()
-                .dispatcher(Dispatchers.IO)
-                .authOptions(
-                    PhoneAuthOptions.newBuilder(this).setActivity(mainActivity)
-                )
-                .authInstance(this)
-                .sharedPreferences(
-                    mainActivity.getSharedPreferences("id", ComponentActivity.MODE_PRIVATE)
-                )
-                .create().apply {
-                    sharedPreferences().apply {
-                        viewModelFactory().also {
-                            val regViewModel by mainActivity.viewModels<RegViewModel> { it }
-                            RegScreen(regViewModel, this) { regCallback(it) }
-                        }
-                    }
-                }
+    BackHandler {
+        if (bottomSheetState.isVisible || drawerState.isOpen)
+        coroutine.launch {
+            bottomSheetState.hide()
+            drawerState.animateTo(DrawerValue.Closed, tween(500))
+        }
+        else mainActivity.finish()
     }
+    Text(text = text, fontSize = 1.sp)
 }
-
-
-
-
-
-
-
 
