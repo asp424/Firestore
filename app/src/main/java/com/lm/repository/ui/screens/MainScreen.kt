@@ -1,7 +1,6 @@
 package com.lm.repository.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
@@ -25,9 +24,9 @@ import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -156,6 +155,8 @@ fun MainScreen(
                     Image(
                         painter = painterResource(id = list[page]),
                         contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier =
                         Modifier.size(
                             LocalConfiguration.current.screenWidthDp.dp,
                             LocalConfiguration.current.screenHeightDp.dp / 3
@@ -213,8 +214,10 @@ fun MainScreen(
                             Column {
                                 Image(
                                     painter = painterResource(id = list[ind]),
-                                    contentDescription = null, modifier = Modifier
-                                        .height(100.dp)
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .height(180.dp)
                                         .align(CenterHorizontally)
                                 )
                                 Text(
@@ -229,7 +232,7 @@ fun MainScreen(
             )
             Image(
                 painter = painterResource(id = R.drawable.ass),
-                contentDescription = null, modifier = Modifier
+                contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier
                     .padding(top = 20.dp)
                     .width(LocalConfiguration.current.screenWidthDp.dp)
                     .height(70.dp)
@@ -254,8 +257,8 @@ fun MainScreen(
         ModalBottomSheetLayout(
             sheetContent = {
                 Card(
-                    shape = RoundedCornerShape(20.dp), border = BorderStroke(2.dp, Black),
-                    modifier = Modifier.fillMaxSize()
+                    shape = RoundedCornerShape(20.dp), border = BorderStroke(4.dp, Black),
+                    modifier = Modifier.fillMaxSize().padding(start = 1.dp, end = 1.dp, bottom = 16.dp)
                 ) {
                     if (firebaseAuth.currentUser?.uid == null) {
                         RegScreen(
@@ -275,8 +278,7 @@ fun MainScreen(
                             }
                         )
                     } else {
-                        Text("Fuck")
-                        Log.d("My", "ppp")
+                        UserInfo(mainViewModel, sharedPreferences)
                     }
                 }
             }, sheetState = bottomSheetState, sheetShape = RoundedCornerShape(20.dp),

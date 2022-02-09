@@ -1,6 +1,7 @@
 package com.lm.repository.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,14 +16,17 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Color.Companion.Yellow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lm.repository.R
 import com.lm.repository.core.Resource
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.data.models.FirePath
@@ -64,10 +68,12 @@ fun RegScreen(
     val keyboardActions = LocalSoftwareKeyboardController.current
 
     ColumnFMS(vertArr = Arrangement.Top) {
-        Icon(
-            Icons.Default.Phone, contentDescription = null, modifier = Modifier
-                .size(160.dp)
-                .padding(top = 40.dp)
+        Image(
+            painter = painterResource(id = R.drawable.onion),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(180.dp).padding(top = 20.dp)
         )
         Card(
             modifier = Modifier
@@ -211,6 +217,9 @@ fun RegScreen(
                                         viewModel.startAuth(phone, 60L).collect {
                                             when (it) {
                                                 is RegResponse.OnSuccess -> {
+                                                    it.uid?.let { it1 ->
+                                                        sharedPrefProvider.save(it1)
+                                                    }
                                                     mainViewModel.dataFromDocumentV(
                                                         FirePath("admin", "phones"
                                                         )
@@ -225,7 +234,7 @@ fun RegScreen(
                                                                 ) {
                                                                     mainViewModel.dataFromDocumentV(
                                                                         FirePath(
-                                                                            "users", phone)
+                                                                            "users", sharedPrefProvider.read())
                                                                     ).collect { a ->
                                                                         if ( a is Resource.Success) {
                                                                             visible = false
@@ -234,11 +243,13 @@ fun RegScreen(
                                                                         }
                                                                     }
                                                                 } else {
-                                                                    it.uid?.let { it1 ->
-                                                                        sharedPrefProvider.save(
-                                                                            it1
+                                                                    mainViewModel.putDataToDocument(
+                                                                        FirePath("users", sharedPrefProvider.read()),
+                                                                        hashMapOf(
+                                                                            "phone" to phone,
+                                                                            "uid" to sharedPrefProvider.read()
                                                                         )
-                                                                    }
+                                                                    ) {}
                                                                     text1 = ""
                                                                     text2 = "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
                                                                     buttonText = "ОТПРАВИТЬ"
@@ -288,6 +299,9 @@ fun RegScreen(
                                             .collect {
                                                 when (it) {
                                                     is RegResponse.OnSuccess -> {
+                                                        it.uid?.let { it1 ->
+                                                            sharedPrefProvider.save(it1)
+                                                        }
                                                         mainViewModel.dataFromDocumentV(
                                                             FirePath(
                                                                 "admin",
@@ -303,9 +317,8 @@ fun RegScreen(
                                                                 ) {
                                                                     mainViewModel.dataFromDocumentV(
                                                                         FirePath(
-                                                                            "users",
-                                                                            phone
-                                                                        )
+                                                                            "users", sharedPrefProvider.read())
+
                                                                     ).collect { a ->
                                                                         if ( a is Resource.Success) {
                                                                             visible = false
@@ -314,9 +327,13 @@ fun RegScreen(
                                                                         }
                                                                     }
                                                                 } else {
-                                                                    it.uid?.let { it1 ->
-                                                                        sharedPrefProvider.save(it1)
-                                                                    }
+                                                                    mainViewModel.putDataToDocument(
+                                                                        FirePath("users", sharedPrefProvider.read()),
+                                                                        hashMapOf(
+                                                                            "phone" to phone,
+                                                                            "uid" to sharedPrefProvider.read()
+                                                                        )
+                                                                    ) {}
                                                                     text1 = ""
                                                                     text2 = "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
                                                                     buttonText = "ОТПРАВИТЬ"
@@ -349,7 +366,7 @@ fun RegScreen(
                                     mainViewModel.putDataToDocument(FirePath("admin", "phones"),
                                         hashMapOf(sharedPrefProvider.read() to phone)){
                                         mainViewModel.putDataToDocument(
-                                            FirePath("users", phone),
+                                            FirePath("users", sharedPrefProvider.read()),
                                             hashMapOf(
                                                 "name" to name,
                                                 "email" to email,
@@ -364,7 +381,7 @@ fun RegScreen(
                     },
                     Modifier
                         .width(LocalConfiguration.current.screenWidthDp.dp / 2)
-                        .height(66.dp)
+                        .height(74.dp)
                         .padding(top = 20.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = White, contentColor = Black
