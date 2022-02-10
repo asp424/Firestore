@@ -33,6 +33,7 @@ import com.lm.repository.core.Resource
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.theme.back
+import com.lm.repository.theme.backScreen
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -194,6 +195,6 @@ fun UserInfo(
         }
     }
     BackHandler {
-        navController.navigate("MainScreen")
+        navController.navigate(backScreen)
     }
 }

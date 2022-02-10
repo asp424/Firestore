@@ -27,6 +27,7 @@ fun DependencyHandlerScope.impl() {
         ).forEach { addD(dep = it) }
     }
     addD(dep = "androidx.activity:activity-compose:1.4.0")
+    addD(dep = "com.squareup.leakcanary:leakcanary-android:2.8.1")
 
     //Firebase
     listOf(

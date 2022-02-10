@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.R
 import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.theme.backScreen
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.navigator.BottomSheet
 import com.lm.repository.ui.viewmodels.MainViewModel
@@ -54,4 +55,5 @@ fun Delivery(
         }
         if (!bottomSheetState.isVisible && !drawerState.isOpen)  navController.navigate("MainScreen")
     }
+    backScreen = "Delivery"
 }

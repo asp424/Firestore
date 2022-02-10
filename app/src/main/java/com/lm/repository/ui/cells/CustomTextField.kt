@@ -27,9 +27,10 @@ fun CustomTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = "Placeholder",
     fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
+    code: String,
     res: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(code)}
     BasicTextField(modifier = modifier
         .background(
             MaterialTheme.colors.surface,

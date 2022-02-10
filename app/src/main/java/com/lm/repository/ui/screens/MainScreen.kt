@@ -34,6 +34,7 @@ import com.lm.repository.MainActivity
 import com.lm.repository.R
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.theme.back
+import com.lm.repository.theme.backScreen
 import com.lm.repository.theme.bottomSheetContent
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
@@ -230,8 +231,9 @@ fun MainScreen(
               if (drawerState.isOpen) coroutine.launch {
                       drawerState.animateTo(DrawerValue.Closed, tween(700))
                   }
-        if (!bottomSheetState.isVisible && !drawerState.isOpen)   mainActivity.finish()
+        if (!bottomSheetState.isVisible && !drawerState.isOpen) mainActivity.finish()
     }
+    backScreen = "MainScreen"
 }
 
 

@@ -37,7 +37,6 @@ fun NavHost(
     bCallback: () -> Unit
 ) {
     AnimatedNavHost(navController = navController, startDestination = "MainScreen") {
-
         composable("MyProfile", enterTransition = {
             slideIntoContainer(
                 AnimatedContentScope.SlideDirection.Up,

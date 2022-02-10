@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.theme.backScreen
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -41,4 +42,5 @@ fun Restaurants(
         }
         if (!bottomSheetState.isVisible && !drawerState.isOpen)  navController.navigate("MainScreen")
     }
+    backScreen = "Restaurants"
 }

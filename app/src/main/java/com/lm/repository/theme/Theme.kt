@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import com.google.firebase.auth.FirebaseAuth
 import com.lm.doublecam.ui.theme.Shapes
 import com.lm.doublecam.ui.theme.Typography
 
@@ -14,6 +15,8 @@ private val DarkColorPalette = darkColors(
     secondary = Teal200
 )
 var bottomSheetContent = ""
+var backScreen = "MainScreen"
+val firebaseAuth by lazy { FirebaseAuth.getInstance() }
 
 private val LightColorPalette = lightColors(
     primary = Purple500,
