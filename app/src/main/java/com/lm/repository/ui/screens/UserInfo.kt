@@ -58,16 +58,20 @@ fun UserInfo(
             )
         ).collect {
             if (it is Resource.Success) {
-                it.data?.get("phone").toString().apply {
+                it.data?.get("phone")?.toString()?.apply {
                     phone = "${substring(0, 2)} (${substring(2, 5)}) ${substring(5, 8)}-${
-                        substring(8, 10)}-${substring(10, 12)} "
+                        substring(8, 10)
+                    }-${substring(10, 12)} "
                 }
 
                 it.data?.apply {
-                    get("patr").toString().also { p ->
-                        name = if (p.isEmpty()) "${get("name")} ${get("sName")}"
-                        else "${get("name")} $p ${get("sName")}"
-                    }
+                    val sN = get("sName")?.toString() ?: ""
+                    val p = get("patr")?.toString() ?: ""
+                    val n = get("name")?.toString() ?: ""
+                    name = "$n $p $sN"
+                    if (p.isEmpty()) name = "$n $sN"
+                    if (n.isEmpty()) name = "$p $sN"
+                    if (n.isEmpty() && p.isEmpty() && sN.isEmpty()) name = "NoName"
                 }
             }
         }
@@ -79,26 +83,22 @@ fun UserInfo(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(LocalConfiguration.current.screenHeightDp.dp / 3).fillMaxWidth()
-        )
-        Row(
-            Modifier
+                .height(LocalConfiguration.current.screenHeightDp.dp / 3)
                 .fillMaxWidth()
-                .padding(top = 20.dp, start = 40.dp, end = 40.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
+        )
+
+            Column(Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, start = 40.dp, end = 20.dp),
+                horizontalAlignment = Alignment.Start) {
                 Text(text = name, fontSize = 20.sp)
                 Text(
                     text = phone,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 6.dp)
+                    modifier = Modifier.padding(top = 10.dp)
                 )
             }
-            Image(Icons.Default.Edit, contentDescription = null, modifier = Modifier.clickable {
-                navController.navigate("MyProfile")
-            })
-        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,7 +122,7 @@ fun UserInfo(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Ваш профиль", color = Gray)
+                Text(text = "Редактировать профиль", color = Gray)
                 Icon(Icons.Default.ChevronRight, contentDescription = null)
             }
 
@@ -139,7 +139,7 @@ fun UserInfo(
                     .height(LocalConfiguration.current.screenHeightDp.dp / 14)
                     .padding(start = 10.dp, end = 10.dp)
                     .clickable {
-
+                        navController.navigate("OrdersList")
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -161,7 +161,7 @@ fun UserInfo(
                     .height(LocalConfiguration.current.screenHeightDp.dp / 14)
                     .padding(start = 10.dp, end = 10.dp)
                     .clickable {
-
+                        navController.navigate("Addresses")
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween

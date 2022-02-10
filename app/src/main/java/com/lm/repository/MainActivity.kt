@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import com.lm.repository.core.appComponentBuilder
+import com.lm.repository.theme.bottomSheetContent
 import com.lm.repository.ui.navigator.Navigator
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -20,8 +21,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         appComponentBuilder.authOptions(
             PhoneAuthOptions.newBuilder(auth).setActivity(this@MainActivity))
             .authInstance(auth)
@@ -30,6 +29,11 @@ class MainActivity : ComponentActivity() {
             val mVm: MainViewModel by viewModels { viewModelFactory() }
             val rVm: RegViewModel by viewModels { viewModelFactory() }
             setContent { Navigator(mVm, rVm, sharedPreferences(), auth) } }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bottomSheetContent = ""
     }
 }
 

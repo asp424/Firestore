@@ -1,20 +1,19 @@
-package com.lm.doublecam.ui.theme
+package com.lm.repository.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import com.lm.repository.theme.Purple200
-import com.lm.repository.theme.Purple500
-import com.lm.repository.theme.Purple700
-import com.lm.repository.theme.Teal200
+import com.lm.doublecam.ui.theme.Shapes
+import com.lm.doublecam.ui.theme.Typography
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,
     secondary = Teal200
 )
+var bottomSheetContent = ""
 
 private val LightColorPalette = lightColors(
     primary = Purple500,

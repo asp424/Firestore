@@ -1,14 +1,14 @@
-package com.lm.repository.ui.cells
+package com.lm.repository.ui.navigator
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.MainActivity
 import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.theme.bottomSheetContent
 import com.lm.repository.ui.screens.RegScreen
 import com.lm.repository.ui.screens.onmainscreen.BonusCard
 import com.lm.repository.ui.screens.onmainscreen.Booking
@@ -33,20 +34,29 @@ fun BottomSheet(
     rVm: RegViewModel,
     sharedPreferences: SharedPrefProvider,
     navController: NavHostController,
-    bottomSheetState: ModalBottomSheetState,
-    screen: String
+    bottomContent: Int,
+    bottomSheetState: ModalBottomSheetState
 ) {
     val mainActivity = LocalContext.current as MainActivity
     val coroutine = rememberCoroutineScope()
+
+    if (bottomSheetContent != "")
+    LaunchedEffect(bottomContent) {
+            if (bottomSheetState.isVisible) {
+                bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
+            } else bottomSheetState.animateTo(
+                ModalBottomSheetValue.Expanded,
+                tween(700)
+            )
+    }
+
     ModalBottomSheetLayout(
         sheetContent = {
             Card(
-                shape = RoundedCornerShape(20.dp), border = BorderStroke(4.dp, Color.Black),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 1.dp, end = 1.dp, bottom = 16.dp)
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                border = BorderStroke(2.dp, Color.Black),
             ) {
-                when (screen) {
+                when (bottomSheetContent) {
                     "reg" -> if (auth.currentUser?.uid == null) {
                         RegScreen(
                             viewModel = rVm,
@@ -85,16 +95,14 @@ fun BottomSheet(
                         rVm = rVm,
                         sharedPreferences = sharedPreferences
                     )
+                    "" -> Text("ass", modifier = Modifier.size(1.dp))
                 }
             }
-        }, sheetState = bottomSheetState, sheetShape = RoundedCornerShape(20.dp),
-        modifier = Modifier.padding(top = 80.dp), sheetBackgroundColor = Color.Gray
-    ) {
-    }
-    BackHandler {
-        if (bottomSheetState.isVisible)
-            coroutine.launch {
-                bottomSheetState.hide()
-            }
-    }
+        }, sheetState = bottomSheetState,
+        sheetBackgroundColor = ModalBottomSheetDefaults.scrimColor,
+        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        content = {
+
+        }
+    )
 }

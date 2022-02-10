@@ -1,35 +1,42 @@
 package com.lm.repository.ui.screens
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Color.Companion.Yellow
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lm.repository.R
 import com.lm.repository.core.Resource
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.data.repository.registration.RegResponse
 import com.lm.repository.theme.Purple700
+import com.lm.repository.theme.back
 import com.lm.repository.ui.cells.ColumnFMS
+import com.lm.repository.ui.cells.CustomTextField
 import com.lm.repository.ui.cells.Visibility
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -49,7 +56,6 @@ fun RegScreen(
     regCallback: (RegResponse, String) -> Unit
 ) {
     var text1 by rememberSaveable { mutableStateOf("ВХОД") }
-    var text2 by rememberSaveable { mutableStateOf("ПО НОМЕРУ ТЕЛЕФОНА") }
     var phone by rememberSaveable { mutableStateOf("") }
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
@@ -64,86 +70,63 @@ fun RegScreen(
     val coroutine = rememberCoroutineScope()
     val keyboardActions = LocalSoftwareKeyboardController.current
 
-    ColumnFMS(vertArr = Arrangement.Top) {
-        Image(
-            painter = painterResource(id = R.drawable.onion),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(180.dp)
-                .padding(top = 20.dp)
-        )
+    ColumnFMS(vertArr = Arrangement.Center) {
+
         Card(
             modifier = Modifier
-                .size(LocalConfiguration.current.screenWidthDp.dp - 50.dp)
-                .padding(top = 40.dp),
-            backgroundColor = Purple700
+                .size(LocalConfiguration.current.screenWidthDp.dp - 50.dp),
+            backgroundColor = Gray
         ) {
             ColumnFMS {
                 Text(
-                    text = text1, modifier = Modifier.padding(bottom = 2.dp),
-                    fontWeight = FontWeight.Bold, color = Yellow
-                )
-
-                Text(
-                    text = text2, modifier = Modifier.padding(bottom = 25.dp),
-                    fontWeight = FontWeight.Bold, color = Yellow
-                )
-
+                    text = text1,
+                    fontWeight = FontWeight.Bold, color = Yellow)
                 Visibility(visible = visiblePhone) {
-                    OutlinedTextField(
-                        value = phone,
-                        onValueChange = {
-                            error = ""
-                            visibleError = false
-                            phone = it
+                    CustomTextField(
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Phone,
+                                null,
+                                tint = LocalContentColor.current.copy(alpha = 0.3f)
+                            )
                         },
-                        shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            backgroundColor = White,
-                            cursorColor = Green,
-                            focusedBorderColor = Purple700
-                        ),
-                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 18.sp),
-                        placeholder = {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(text = "Телефон", textAlign = TextAlign.Center)
-                            }
-                        }
-                    )
+                        trailingIcon = null,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colors.surface,
+                                RoundedCornerShape(percent = 20)
+                            )
+                            .padding(4.dp)
+                            .height(LocalConfiguration.current.screenHeightDp.dp / 18),
+                        fontSize = 16.sp,
+                        placeholderText = "Телефон"
+                    ){
+                        phone = it
+                    }
                 }
 
                 Visibility(visible = visibleCode) {
-                    OutlinedTextField(
-                        value = code,
-                        onValueChange = {
-                            error = ""
-                            visibleError = false
-                            code = it
+                    CustomTextField(
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Code,
+                                null,
+                                tint = LocalContentColor.current.copy(alpha = 0.3f)
+                            )
                         },
-                        shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            backgroundColor = White,
-                            cursorColor = Green,
-                            focusedBorderColor = Purple700
-                        ),
-                        modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp / 2),
-                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 18.sp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        placeholder = {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(text = "SMS код", textAlign = TextAlign.Center)
-                            }
-                        }
-                    )
+                        trailingIcon = null,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colors.surface,
+                                RoundedCornerShape(percent = 20)
+                            )
+                            .padding(4.dp)
+                            .height(LocalConfiguration.current.screenHeightDp.dp / 18),
+                        fontSize = 16.sp,
+                        placeholderText = "SMS код"
+                    ){
+                        code = it
+                    }
                 }
 
                 Visibility(visible = visibleName) {
@@ -162,8 +145,7 @@ fun RegScreen(
                                 focusedBorderColor = Purple700
                             ),
                             modifier = Modifier
-                                .width(LocalConfiguration.current.screenWidthDp.dp / 2)
-                                .padding(bottom = 10.dp),
+                                .width(LocalConfiguration.current.screenWidthDp.dp / 2),
                             textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 18.sp),
                             placeholder = {
                                 Row(
@@ -204,110 +186,15 @@ fun RegScreen(
 
                 Button(
                     onClick = {
-                        when (buttonText) {
-                            "ВОЙТИ" ->
-                                if (phone.replace(" ", "").length == 12)
-                                    coroutine.launch {
-                                        error = ""
-                                        keyboardActions?.hide()
-                                        visible = true
-                                        viewModel.startAuth(phone, 60L).collect {
-                                            when (it) {
-                                                is RegResponse.OnSuccess -> {
-                                                    it.uid?.let { it1 ->
-                                                        sharedPrefProvider.save(it1)
-                                                    }
-                                                    mainViewModel.dataFromDocumentV(
-                                                        FirePath(
-                                                            "admin", "phones"
-                                                        )
-                                                    )
-                                                        .collect { map ->
-                                                            if (map is Resource.Success) {
-                                                                if (map.data?.data?.containsValue(
-                                                                        phone.replace(" ", "")
-                                                                    ) == true && map.data.data!!.getValue(
-                                                                        checkNotNull(it.uid)
-                                                                    ) == phone.replace(
-                                                                        " ",
-                                                                        ""
-                                                                    )
-                                                                ) {
-                                                                    mainViewModel.dataFromDocumentV(
-                                                                        FirePath(
-                                                                            "users",
-                                                                            sharedPrefProvider.read()
-                                                                        )
-                                                                    ).collect { a ->
-                                                                        if (a is Resource.Success) {
-                                                                            visible = false
-                                                                            a.data?.data?.get("name")
-                                                                                ?.let { it1 ->
-                                                                                    regCallback(
-                                                                                        it,
-                                                                                        it1.toString()
-                                                                                    )
-                                                                                }
-                                                                        }
-                                                                    }
-                                                                } else {
-                                                                    mainViewModel.putDataToDocument(
-                                                                        FirePath(
-                                                                            "users",
-                                                                            sharedPrefProvider.read()
-                                                                        ),
-                                                                        hashMapOf(
-                                                                            "phone" to phone,
-                                                                            "uid" to sharedPrefProvider.read()
-                                                                        )
-                                                                    ) {}
-                                                                    text1 = ""
-                                                                    text2 = "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
-                                                                    buttonText = "ОТПРАВИТЬ"
-                                                                    visible = false
-                                                                    visibleCode = false
-                                                                    visiblePhone = false
-                                                                    visibleName = true
-                                                                }
-                                                            }
-                                                        }
-                                                }
-
-                                                is RegResponse.SmsCode -> {
-                                                    code = it.smsCode.toString()
-                                                    visible = true
-                                                }
-
-                                                is RegResponse.OnError -> {
-                                                    error = it.exception.toString()
-                                                    visible = false
-                                                    visibleError = true
-                                                }
-
-                                                is RegResponse.RegId -> {
-                                                    visible = false
-                                                    buttonText = "ОТПРАВИТЬ КОД"
-                                                    visiblePhone = false
-                                                    visibleCode = true
-                                                }
-                                                else -> Unit
-                                            }
-                                        }
-                                    }
-                                else {
-                                    keyboardActions?.hide()
-                                    error =
-                                        "Телефонный номер должен начинаться с '+7' и состоять из 12 - ти символов"
-                                    visibleError = true
-                                }
-                            "ОТПРАВИТЬ КОД" ->
-                                if (code.replace(" ", "").length == 6)
-                                    coroutine.launch {
-                                        error = ""
-                                        keyboardActions?.hide()
-                                        visible = true
-                                        viewModel.authWithCode(sharedPrefProvider.read(), code)
-                                            .collect {
+                        phone.replace(" ", "").apply {
+                            when (buttonText) {
+                                "ВОЙТИ" ->
+                                    if (length == 12 && startsWith("+"))
+                                        coroutine.launch {
+                                            error = ""
+                                            keyboardActions?.hide()
+                                            visible = true
+                                            viewModel.startAuth(phone, 60L).collect {
                                                 when (it) {
                                                     is RegResponse.OnSuccess -> {
                                                         it.uid?.let { it1 ->
@@ -315,59 +202,71 @@ fun RegScreen(
                                                         }
                                                         mainViewModel.dataFromDocumentV(
                                                             FirePath(
-                                                                "admin",
-                                                                "phones"
+                                                                "admin", "phones"
                                                             )
-                                                        ).collect { map ->
-                                                            if (map is Resource.Success) {
-                                                                if (map.data?.data?.containsValue(
-                                                                        phone.replace(" ", "")
-                                                                    ) == true && map.data.data!!.getValue(
-                                                                        checkNotNull(it.uid)
-                                                                    ) == phone.replace(
-                                                                        " ",
-                                                                        ""
-                                                                    )
-                                                                ) {
-                                                                    mainViewModel.dataFromDocumentV(
-                                                                        FirePath(
-                                                                            "users",
-                                                                            sharedPrefProvider.read()
-                                                                        )
+                                                        )
+                                                            .collect { map ->
+                                                                if (map is Resource.Success) {
+                                                                    if (map.data?.data?.containsValue(
+                                                                            this@apply
+                                                                        ) == true && map.data.data!!.getValue(
+                                                                            checkNotNull(it.uid)
+                                                                        ) == this@apply
+                                                                    ) {
+                                                                        mainViewModel.dataFromDocumentV(
+                                                                            FirePath(
+                                                                                "users",
+                                                                                sharedPrefProvider.read()
+                                                                            )
+                                                                        ).collect { a ->
+                                                                            if (a is Resource.Success) {
+                                                                                visible = false
+                                                                                a.data?.data?.get("name")
+                                                                                    ?.let { it1 ->
+                                                                                        regCallback(
+                                                                                            it,
+                                                                                            it1.toString()
+                                                                                        )
+                                                                                    }
+                                                                            }
+                                                                        }
+                                                                    } else {
+                                                                        mainViewModel.putDataToDocument(
+                                                                            FirePath(
+                                                                                "users",
+                                                                                sharedPrefProvider.read()
+                                                                            ),
+                                                                            hashMapOf(
+                                                                                "phone" to this@apply,
+                                                                                "uid" to sharedPrefProvider.read()
+                                                                            )
+                                                                        ) {
+                                                                            mainViewModel.putDataToDocument(
+                                                                                FirePath(
+                                                                                    "admin",
+                                                                                    "phones"
+                                                                                ),
+                                                                                hashMapOf(this@apply to sharedPrefProvider.read())
+                                                                            ) {
 
-                                                                    ).collect { a ->
-                                                                        if (a is Resource.Success) {
-                                                                            visible = false
-                                                                            a.data?.data?.get("name")
-                                                                                ?.let { it1 ->
-                                                                                    regCallback(
-                                                                                        it,
-                                                                                        it1.toString()
-                                                                                    )
-                                                                                }
+                                                                                text1 =
+                                                                                    "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
+                                                                                buttonText =
+                                                                                    "ОТПРАВИТЬ"
+                                                                                visible = false
+                                                                                visibleCode = false
+                                                                                visiblePhone = false
+                                                                                visibleName = true
+                                                                            }
                                                                         }
                                                                     }
-                                                                } else {
-                                                                    mainViewModel.putDataToDocument(
-                                                                        FirePath(
-                                                                            "users",
-                                                                            sharedPrefProvider.read()
-                                                                        ),
-                                                                        hashMapOf(
-                                                                            "phone" to phone,
-                                                                            "uid" to sharedPrefProvider.read()
-                                                                        )
-                                                                    ) {}
-                                                                    text1 = ""
-                                                                    text2 = "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
-                                                                    buttonText = "ОТПРАВИТЬ"
-                                                                    visible = false
-                                                                    visibleCode = false
-                                                                    visiblePhone = false
-                                                                    visibleName = true
                                                                 }
                                                             }
-                                                        }
+                                                    }
+
+                                                    is RegResponse.SmsCode -> {
+                                                        code = it.smsCode.toString()
+                                                        visible = true
                                                     }
 
                                                     is RegResponse.OnError -> {
@@ -375,22 +274,115 @@ fun RegScreen(
                                                         visible = false
                                                         visibleError = true
                                                     }
+
+                                                    is RegResponse.RegId -> {
+                                                        visible = false
+                                                        buttonText = "ОТПРАВИТЬ КОД"
+                                                        visiblePhone = false
+                                                        visibleCode = true
+                                                    }
                                                     else -> Unit
                                                 }
                                             }
+                                        }
+                                    else {
+                                        keyboardActions?.hide()
+                                        error =
+                                            "Телефонный номер должен начинаться с '+7' и состоять из 12 - ти символов"
+                                        visibleError = true
                                     }
-                                else {
-                                    keyboardActions?.hide()
-                                    error = "Код должен быть шестизначным"
-                                    visibleError = true
-                                }
-                            "ОТПРАВИТЬ" -> if (name.isNotEmpty())
-                                coroutine.launch {
-                                    error = ""
-                                    mainViewModel.putDataToDocument(
-                                        FirePath("admin", "phones"),
-                                        hashMapOf(sharedPrefProvider.read() to phone)
-                                    ) {
+                                "ОТПРАВИТЬ КОД" ->
+                                    if (code.replace(" ", "").length == 6)
+                                        coroutine.launch {
+                                            error = ""
+                                            keyboardActions?.hide()
+                                            visible = true
+                                            viewModel.authWithCode(sharedPrefProvider.read(), code)
+                                                .collect {
+                                                    when (it) {
+                                                        is RegResponse.OnSuccess -> {
+                                                            it.uid?.let { it1 ->
+                                                                sharedPrefProvider.save(it1)
+                                                            }
+                                                            mainViewModel.dataFromDocumentV(
+                                                                FirePath(
+                                                                    "admin",
+                                                                    "phones"
+                                                                )
+                                                            ).collect { map ->
+                                                                if (map is Resource.Success) {
+                                                                    if (map.data?.data?.containsKey(
+                                                                            this@apply
+                                                                        ) == true
+                                                                    ) {
+                                                                        mainViewModel.dataFromDocumentV(
+                                                                            FirePath(
+                                                                                "users",
+                                                                                sharedPrefProvider.read()
+                                                                            )
+                                                                        ).collect { a ->
+                                                                            if (a is Resource.Success) {
+                                                                                visible = false
+                                                                                a.data?.data?.get("name")
+                                                                                    ?.let { it1 ->
+                                                                                        regCallback(
+                                                                                            it,
+                                                                                            it1.toString()
+                                                                                        )
+                                                                                    }
+                                                                            }
+                                                                        }
+                                                                    } else {
+                                                                        mainViewModel.putDataToDocument(
+                                                                            FirePath(
+                                                                                "users",
+                                                                                sharedPrefProvider.read()
+                                                                            ),
+                                                                            hashMapOf(
+                                                                                "phone" to this@apply,
+                                                                                "uid" to sharedPrefProvider.read()
+                                                                            )
+                                                                        ) {
+                                                                            mainViewModel.putDataToDocument(
+                                                                                FirePath(
+                                                                                    "admin",
+                                                                                    "phones"
+                                                                                ),
+                                                                                hashMapOf(this@apply to sharedPrefProvider.read())
+                                                                            ) {
+
+                                                                                text1 =
+                                                                                    "ДАВАЙТЕ ПОЗНАКОМИМСЯ"
+                                                                                buttonText =
+                                                                                    "ОТПРАВИТЬ"
+                                                                                visible = false
+                                                                                visibleCode = false
+                                                                                visiblePhone = false
+                                                                                visibleName = true
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        is RegResponse.OnError -> {
+                                                            error = it.exception.toString()
+                                                            visible = false
+                                                            visibleError = true
+                                                        }
+                                                        else -> Unit
+                                                    }
+                                                }
+                                        }
+                                    else {
+                                        keyboardActions?.hide()
+                                        error = "Код должен быть шестизначным"
+                                        visibleError = true
+                                    }
+                                "ОТПРАВИТЬ" -> if (name.isNotEmpty())
+                                    coroutine.launch {
+                                        error = ""
                                         mainViewModel.putDataToDocument(
                                             FirePath("users", sharedPrefProvider.read()),
                                             hashMapOf(
@@ -405,16 +397,15 @@ fun RegScreen(
                                             )
                                         }
                                     }
-                                }
+                            }
                         }
                     },
                     Modifier
-                        .width(LocalConfiguration.current.screenWidthDp.dp / 2)
-                        .height(74.dp)
-                        .padding(top = 20.dp),
+                        .width(LocalConfiguration.current.screenWidthDp.dp - 100.dp)
+                        .height(LocalConfiguration.current.screenHeightDp.dp / 18),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = White, contentColor = Black
-                    )
+                        backgroundColor = back, contentColor = Black
+                    ), shape = RoundedCornerShape(9.dp)
                 ) {
                     Text(text = buttonText)
                 }
@@ -436,8 +427,3 @@ fun RegScreen(
         }
     }
 }
-
-
-
-
-

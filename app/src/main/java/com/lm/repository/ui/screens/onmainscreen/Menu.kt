@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -22,7 +23,8 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.R
 import com.lm.repository.core.SharedPrefProvider
-import com.lm.repository.ui.cells.BottomSheet
+import com.lm.repository.ui.cells.ColumnFMS
+import com.lm.repository.ui.navigator.BottomSheet
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
 import kotlinx.coroutines.launch
@@ -34,73 +36,23 @@ fun Menu(
     auth: FirebaseAuth,
     navController: NavHostController,
     rVm: RegViewModel,
-    sharedPreferences: SharedPrefProvider
+    sharedPreferences: SharedPrefProvider,
+    bottomSheetState: ModalBottomSheetState,
+    drawerState: DrawerState
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val coroutine = rememberCoroutineScope()
 
-    ModalDrawer(drawerContent = {
-
-    }, drawerState = drawerState, content = {
-        Row(
-            modifier = Modifier
-                .padding(top = 18.dp, start = 12.dp, end = 12.dp, bottom = 10.dp)
-                .fillMaxWidth()
-                .height(65.dp), horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Icon(
-                Icons.Default.Menu,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        coroutine.launch {
-                            drawerState.animateTo(DrawerValue.Open, tween(500))
-                        }
-                    },
-                tint = Color.DarkGray
-            )
-            Row {
-                Image(
-                    painterResource(id = R.drawable.onion),
-                    contentDescription = null, modifier = Modifier
-                        .size(30.dp)
-                        .padding(end = 6.dp)
-                )
-                Text(
-                    text = "Меню ресторана",
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 3.dp)
-                )
-            }
-
-            Icon(
-                Icons.Default.AccountBox,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        if (auth.currentUser == null)
-                            coroutine.launch {
-                                if (bottomSheetState.isVisible) {
-                                    bottomSheetState.animateTo(ModalBottomSheetValue.Hidden)
-                                } else {
-                                    bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
-                                }
-                            }
-                        else navController.navigate("UserInfo")
-                    }
-            )
-        }
-    })
-
-    BottomSheet(auth, mVm, rVm, sharedPreferences, navController, bottomSheetState, "reg")
+    ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.padding(top = 59.dp)) {
+        Text(text = "Menu")
+    }
 
     BackHandler {
-        navController.navigate("MainScreen")
+        if (bottomSheetState.isVisible)
+            coroutine.launch { bottomSheetState.animateTo(ModalBottomSheetValue.Hidden,
+                tween(700)) }
+        if (drawerState.isOpen) coroutine.launch {
+            drawerState.animateTo(DrawerValue.Closed, tween(700))
+        }
+        if (!bottomSheetState.isVisible && !drawerState.isOpen)  navController.navigate("MainScreen")
     }
 }
