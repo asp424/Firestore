@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.di.MainDep
+import com.lm.repository.di.MainDep.depends
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -22,19 +24,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun OrdersList(
-    mVm: MainViewModel,
-    auth: FirebaseAuth,
-    navController: NavHostController,
-    rVm: RegViewModel,
-    sharedPreferences: SharedPrefProvider
-) {
-    ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.background(Gray)) {
-        Text(text = "ВАШИ ЗАКАЗЫ", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(top = 30.dp))
-        Text(text = "XXXXXXXXXX")
-    }
+fun OrdersList() {
+    depends.apply {
+        ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.background(Gray)) {
+            Text(
+                text = "ВАШИ ЗАКАЗЫ",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(top = 30.dp)
+            )
+            Text(text = "XXXXXXXXXX")
+        }
 
-    BackHandler {
-        navController.navigate("UserInfo")
+        BackHandler {
+            navController.navigate("UserInfo")
+        }
     }
 }

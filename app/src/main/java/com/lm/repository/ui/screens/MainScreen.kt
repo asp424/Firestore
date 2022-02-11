@@ -2,7 +2,6 @@ package com.lm.repository.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,20 +24,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.MainActivity
 import com.lm.repository.R
-import com.lm.repository.core.SharedPrefProvider
+import com.lm.repository.di.MainDep.depends
+import com.lm.repository.di.backScreen
 import com.lm.repository.theme.back
-import com.lm.repository.theme.backScreen
-import com.lm.repository.theme.bottomSheetContent
 import com.lm.repository.ui.cells.ColumnFMS
-import com.lm.repository.ui.viewmodels.MainViewModel
-import com.lm.repository.ui.viewmodels.RegViewModel
+import com.lm.repository.ui.utils.backAction
+import com.lm.repository.ui.utils.expandBottomSheet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
@@ -75,165 +71,180 @@ private val listButtonsNav = listOf(
     ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class
 )
 @Composable
-fun MainScreen(
-    mainViewModel: MainViewModel,
-    regViewModel: RegViewModel,
-    sharedPreferences: SharedPrefProvider,
-    firebaseAuth: FirebaseAuth,
-    navController: NavHostController,
-    bottomSheetState: ModalBottomSheetState,
-    drawerState: DrawerState,
-    bCallback: () -> Unit
-) {
+fun MainScreen() {
     val pagerState = rememberPagerState()
-    val mainActivity = LocalContext.current as MainActivity
     val t by remember { mutableStateOf("") }
     val width = LocalConfiguration.current.screenWidthDp.dp
     val height = LocalConfiguration.current.screenHeightDp.dp
-    val coroutine = rememberCoroutineScope()
-
-    LaunchedEffect(t) {
-        (0 until 1000).asFlow().onEach { delay(3_000) }.collect {
-            pagerState.apply {
-                if (currentPage == list.lastIndex) animateScrollToPage(0)
-                else animateScrollToPage(currentPage + 1)
+    depends.apply {
+        LaunchedEffect(t) {
+            (0 until 1000).asFlow().onEach { delay(3_000) }.collect {
+                pagerState.apply {
+                    if (currentPage == list.lastIndex) animateScrollToPage(0)
+                    else animateScrollToPage(currentPage + 1)
+                }
             }
         }
-    }
-    ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.padding(top = 59.dp)) {
-        Box {
-            HorizontalPager(count = list.size, state = pagerState) { page ->
-                Image(
-                    painter = painterResource(id = list[page]),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier =
-                    Modifier.size(width, height / 3 - width / 12)
+        ColumnFMS(
+            vertArr = Arrangement.Top,
+            modifier = Modifier.padding(top = 59.dp)
+        ) {
+            Box {
+                HorizontalPager(count = list.size, state = pagerState) { page ->
+                    Image(
+                        painter = painterResource(id = list[page]),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier =
+                        Modifier.size(width, height / 3 - width / 12)
+                    )
+                }
+
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter),
                 )
             }
 
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.BottomCenter),
-            )
-        }
-
-        Text(text = "XXXXXXXXXXXXXXXXX", modifier = Modifier.padding(top = 20.dp))
-
-        Column(modifier = Modifier.padding(top = 20.dp)) {
-            listButtons.forEachIndexed { i, it ->
-                Button(
-                    onClick = {
-                        when (listButtonsNav[i]) {
-                            "BonusCard" -> {
-                                bottomSheetContent =
-                                    if (firebaseAuth.currentUser != null) "bonusCard"
-                                    else "reg"
-                                bCallback()
-                            }
-
-                            "Booking" -> {
-                                bottomSheetContent = "booking"
-                                bCallback()
-                            }
-                        }
-                        if (listButtonsNav[i] != "BonusCard" && listButtonsNav[i] != "Booking")
-                            navController.navigate(listButtonsNav[i])
-                    }, modifier = Modifier
-                        .padding(bottom = 10.dp)
-                        .width(width)
-                        .padding(start = 40.dp, end = 40.dp)
-                        .height(height / 16),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = back),
-                    shape = RoundedCornerShape(8.dp), elevation = ButtonDefaults.elevation(
-                        defaultElevation = 6.dp,
-                        pressedElevation = 60.dp,
-                        hoveredElevation = 20.dp,
-                        focusedElevation = 40.dp
-                    ), border = BorderStroke(1.dp, Gray)
-                ) {
-                    Text(text = it, fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-        Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "СОБЫТИЯ",
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(start = 15.dp, top = 15.dp),
-                fontWeight = FontWeight.ExtraLight
+                text = "XXXXXXXXXXXXXXXXX",
+                modifier = Modifier.padding(top = 20.dp)
             )
-        }
 
-        LazyRow(
-            content = {
-                items(5) { ind ->
-                    Card(
-                        shape = RoundedCornerShape(10.dp), elevation = 20.dp, modifier =
-                        Modifier
-                            .width(width / 2)
-                            .height(280.dp)
-                            .padding(
-                                top = 15.dp,
-                                bottom = 15.dp,
-                                end = if (ind == 4) 0.dp else 15.dp
-                            )
+            Column(modifier = Modifier.padding(top = 20.dp)) {
+                listButtons.forEachIndexed { i, it ->
+                    depends.fireAuth.apply {
+                        depends.mainViewModel.also { mVm ->
 
-                    ) {
-                        Column {
-                            Image(
-                                painter = painterResource(id = list[ind]),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
+                            Button(
+                                onClick = {
+                                    coroutine.launch {
+                                        when (listButtonsNav[i]) {
+                                            "BonusCard" -> expandBottomSheet(
+                                                mVm,
+                                                if (this@apply.currentUser != null) "bonusCard"
+                                                else "reg"
+                                            )
+                                            "Booking" -> expandBottomSheet(
+                                                mVm,
+                                                "booking"
+                                            )
+                                            else -> navController.navigate(
+                                                listButtonsNav[i]
+                                            )
+                                        }
+                                    }
+                                },
                                 modifier = Modifier
-                                    .height(180.dp)
-                                    .align(CenterHorizontally)
-                            )
-                            Text(
-                                text = "aaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                textAlign = TextAlign.Start, modifier = Modifier.padding(10.dp)
-                            )
+                                    .padding(bottom = 10.dp)
+                                    .width(width)
+                                    .padding(start = 40.dp, end = 40.dp)
+                                    .height(height / 16),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = back),
+                                shape = RoundedCornerShape(8.dp),
+                                elevation = ButtonDefaults.elevation(
+                                    defaultElevation = 6.dp,
+                                    pressedElevation = 60.dp,
+                                    hoveredElevation = 20.dp,
+                                    focusedElevation = 40.dp
+                                ),
+                                border = BorderStroke(1.dp, Gray)
+                            ) {
+                                Text(text = it, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 }
-            },
-            contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
-        )
-        Image(
-            painter = painterResource(id = R.drawable.ass),
-            contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier
-                .padding(top = 20.dp)
-                .width(width)
-                .height(70.dp)
-        )
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .background(Red)
-                .height(40.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Andrey Valerich Ⓒ 2022",
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = White,
-                modifier = Modifier.fillMaxWidth()
-            )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "СОБЫТИЯ",
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(start = 15.dp, top = 15.dp),
+                        fontWeight = FontWeight.ExtraLight
+                    )
+                }
+
+                LazyRow(
+                    content = {
+                        items(5) { ind ->
+                            Card(
+                                shape = RoundedCornerShape(10.dp),
+                                elevation = 20.dp,
+                                modifier =
+                                Modifier
+                                    .width(width / 2)
+                                    .height(280.dp)
+                                    .padding(
+                                        top = 15.dp,
+                                        bottom = 15.dp,
+                                        end = if (ind == 4) 0.dp else 15.dp
+                                    )
+
+                            ) {
+                                Column {
+                                    Image(
+                                        painter = painterResource(id = list[ind]),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .height(180.dp)
+                                            .align(CenterHorizontally)
+                                    )
+                                    Text(
+                                        text = "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    contentPadding = PaddingValues(start = 30.dp, end = 30.dp),
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ass),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .width(width)
+                        .height(70.dp)
+                )
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Red)
+                        .height(40.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Andrey Valerich Ⓒ 2022",
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = White,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            (LocalContext.current as MainActivity).apply {
+                BackHandler {
+                    coroutine.launch {
+                        backAction(
+                            bottomSheetState,
+                            drawerState
+                        ) { finish() }
+                    }
+                }
+            }
+            backScreen = "MainScreen"
         }
     }
-    BackHandler {
-        if (bottomSheetState.isVisible)
-            coroutine.launch { bottomSheetState.animateTo(ModalBottomSheetValue.Hidden,
-                tween(700)) }
-              if (drawerState.isOpen) coroutine.launch {
-                      drawerState.animateTo(DrawerValue.Closed, tween(700))
-                  }
-        if (!bottomSheetState.isVisible && !drawerState.isOpen) mainActivity.finish()
-    }
-    backScreen = "MainScreen"
 }
+
+
+
 
 

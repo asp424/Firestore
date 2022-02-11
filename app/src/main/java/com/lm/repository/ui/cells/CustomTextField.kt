@@ -1,10 +1,8 @@
 package com.lm.repository.ui.cells
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalTextStyle
@@ -22,21 +20,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CustomTextField(
-    modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = "Placeholder",
     fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
-    code: String,
     res: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf(code)}
-    BasicTextField(modifier = modifier
-        .background(
-            MaterialTheme.colors.surface,
-            MaterialTheme.shapes.small,
-        )
-        .width(LocalConfiguration.current.screenWidthDp.dp - 100.dp),
+    var text by remember { mutableStateOf("")}
+    BasicTextField(
         value = text,
         onValueChange = {
             text = it
@@ -50,7 +41,18 @@ fun CustomTextField(
         ),
         decorationBox = { innerTextField ->
             Row(
-                modifier,
+                Modifier
+                    .background(
+                        MaterialTheme.colors.surface,
+                        RoundedCornerShape(percent = 20)
+                    )
+                    .padding(4.dp)
+                    .height(LocalConfiguration.current.screenHeightDp.dp / 18)
+                    .background(
+                        MaterialTheme.colors.surface,
+                        MaterialTheme.shapes.small,
+                    )
+                    .width(LocalConfiguration.current.screenWidthDp.dp - 110.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingIcon != null) leadingIcon()

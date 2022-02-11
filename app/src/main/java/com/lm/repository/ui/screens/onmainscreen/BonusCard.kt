@@ -1,6 +1,5 @@
 package com.lm.repository.ui.screens.onmainscreen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,13 +12,7 @@ import com.lm.repository.ui.viewmodels.RegViewModel
 
 @OptIn(ExperimentalMaterialApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
-fun BonusCard(
-    mVm: MainViewModel,
-    auth: FirebaseAuth,
-    navController: NavHostController,
-    rVm: RegViewModel,
-    sharedPreferences: SharedPrefProvider
-) {
+fun BonusCard() {
     ColumnFMS {
         Text(text = "BonusCard")
     }

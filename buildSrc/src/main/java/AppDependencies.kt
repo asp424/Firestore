@@ -3,13 +3,6 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 const val composeCompilerVersion = "1.2.0-alpha02"
 
 fun DependencyHandlerScope.impl() {
-
-    //Dagger2
-    with("2.39.1") {
-        addD(dep = "com.google.dagger:dagger:$this")
-        addD(method = kapt, dep = "com.google.dagger:dagger-compiler:$this")
-    }
-
     //Compose
     with(composeCompilerVersion) {
         listOf(
@@ -62,7 +55,7 @@ val listPlugins = listOf(
 
 private fun DependencyHandlerScope.addD(method: String = imp, dep: Any) = add(method, dep)
 private val imp get() = "implementation"
-private val kapt get() = "kapt"
+
 
 
 

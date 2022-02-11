@@ -1,46 +1,37 @@
 package com.lm.repository.ui.screens.onmainscreen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.DrawerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.firebase.auth.FirebaseAuth
-import com.lm.repository.core.SharedPrefProvider
-import com.lm.repository.theme.backScreen
+import com.lm.repository.di.MainDep
+import com.lm.repository.di.MainDep.depends
+import com.lm.repository.di.backScreen
 import com.lm.repository.ui.cells.ColumnFMS
-import com.lm.repository.ui.viewmodels.MainViewModel
-import com.lm.repository.ui.viewmodels.RegViewModel
+import com.lm.repository.ui.utils.backAction
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
-fun Restaurants(
-    mVm: MainViewModel,
-    auth: FirebaseAuth,
-    navController: NavHostController,
-    rVm: RegViewModel,
-    sharedPreferences: SharedPrefProvider,
-    bottomSheetState: ModalBottomSheetState,
-    drawerState: DrawerState
-) {
-    val coroutine = rememberCoroutineScope()
-    ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.padding(top = 59.dp)) {
-        Text(text = "Restaurants")
-    }
-
-    BackHandler {
-        if (bottomSheetState.isVisible)
-            coroutine.launch { bottomSheetState.animateTo(ModalBottomSheetValue.Hidden,
-                tween(700)) }
-        if (drawerState.isOpen) coroutine.launch {
-            drawerState.animateTo(DrawerValue.Closed, tween(700))
+fun Restaurants() {
+    depends.apply {
+        ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.padding(top = 59.dp)) {
+            Text(text = "Restaurants")
         }
-        if (!bottomSheetState.isVisible && !drawerState.isOpen)  navController.navigate("MainScreen")
+
+        BackHandler {
+            coroutine.launch {
+                backAction(bottomSheetState, drawerState) { navController.navigate("MainScreen") }
+            }
+        }
+        backScreen = "Restaurants"
     }
-    backScreen = "Restaurants"
 }

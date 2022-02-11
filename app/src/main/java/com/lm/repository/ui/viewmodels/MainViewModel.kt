@@ -1,7 +1,6 @@
 package com.lm.repository.ui.viewmodels
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
@@ -9,14 +8,19 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.data.repository.firestore.FirestoreRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val repository: FirestoreRepository,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
+
+    private val _bottomSheet = MutableStateFlow(1)
+    val bottomSheet get() = _bottomSheet
 
     fun putDataToDocument(
         path: FirePath,
@@ -43,7 +47,6 @@ class MainViewModel @Inject constructor(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue = Resource.Loading
-
             )
         }
 
@@ -66,4 +69,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             with(repository) { deleteCollection(path) { onSuccess() } }
         }
-    }
+
+    fun bottomSheetAction() = _bottomSheet.value++
+
+}

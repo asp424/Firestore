@@ -14,9 +14,8 @@ private val DarkColorPalette = darkColors(
     primaryVariant = Purple700,
     secondary = Teal200
 )
-var bottomSheetContent = ""
-var backScreen = "MainScreen"
-val firebaseAuth by lazy { FirebaseAuth.getInstance() }
+
+
 
 private val LightColorPalette = lightColors(
     primary = Purple500,

@@ -11,13 +11,7 @@ import com.lm.repository.ui.viewmodels.RegViewModel
 
 @OptIn(ExperimentalMaterialApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
-fun Booking(
-    mVm: MainViewModel,
-    auth: FirebaseAuth,
-    navController: NavHostController,
-    rVm: RegViewModel,
-    sharedPreferences: SharedPrefProvider
-) {
+fun Booking() {
    ColumnFMS {
        Text(text = "Booking")
    }
