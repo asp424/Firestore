@@ -1,11 +1,14 @@
 package com.lm.repository.ui.viewmodels
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.lm.repository.core.Resource
 import com.lm.repository.data.models.FirePath
+import com.lm.repository.data.models.User
 import com.lm.repository.data.repository.firestore.FirestoreRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +18,13 @@ import kotlinx.coroutines.launch
 class MainViewModel (
     private val repository: FirestoreRepository,
     private val dispatcher: CoroutineDispatcher
-) : ViewModel() {
+) : ViewModel(), DefaultLifecycleObserver {
+
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        readUser()
+    }
 
     private val _bottomSheet = MutableStateFlow(1)
     val bottomSheet get() = _bottomSheet
@@ -74,5 +83,9 @@ class MainViewModel (
     fun bottomSheetAction() = _bottomSheet.value++
 
     fun setDrawerHeader(header: String) { _drawerHeader.value = header }
+
+    fun user(): User = repository.user()
+
+    fun readUser() = viewModelScope.launch { repository.readUser() }
 
 }

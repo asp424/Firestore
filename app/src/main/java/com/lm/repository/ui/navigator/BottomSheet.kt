@@ -6,7 +6,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomSheet() {
     val controller by depends.mainViewModel.bottomSheet.collectAsState()
+
     depends.apply {
         LaunchedEffect(controller) {
             if (controller != 1)
@@ -35,45 +39,36 @@ fun BottomSheet() {
                     )
                 }
         }
-        val mainActivity = LocalContext.current as MainActivity
-        val coroutine = rememberCoroutineScope()
-        ModalBottomSheetLayout(
-            sheetContent = {
-                Card(
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                    border = BorderStroke(2.dp, Color.Black),
-                ) {
-                    when (bottomSheetContent) {
-                        "reg" ->
-                            RegScreen(
-                                regCallback = { res, name ->
-                                    coroutine.launch {
-                                        bottomSheetState.hide()
-                                        if (name.isNotEmpty())
-                                            Toast.makeText(
-                                                mainActivity,
-                                                "С возвращением, $name!",
-                                                Toast.LENGTH_LONG
+        (LocalContext.current as MainActivity).also { act ->
+            ModalBottomSheetLayout(
+                sheetContent = {
+                    Card(
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                        border = BorderStroke(2.dp, Color.Black),
+                    ) {
+                        when (bottomSheetContent) {
+                            "reg" ->
+                                RegScreen(
+                                    regCallback = { res, name ->
+                                        coroutine.launch {
+                                            bottomSheetState.hide()
+                                            Toast.makeText(act,
+                                                if (name.isNotEmpty()) "С возвращением, $name!"
+                                                else "Вы зарегестрированы", Toast.LENGTH_LONG
                                             ).show()
-                                        else Toast.makeText(
-                                            mainActivity,
-                                            "Вы зарегестрированы",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+                                        }
                                     }
-                                }
-                            )
-                        "bonusCard" -> BonusCard()
-                        "booking" -> Booking()
-                        "" -> Text("ass", modifier = Modifier.size(1.dp))
+                                )
+                            "bonusCard" -> BonusCard()
+                            "booking" -> Booking()
+                            "" -> Text("ass", modifier = Modifier.size(1.dp))
+                        }
                     }
-                }
-            }, sheetState = bottomSheetState,
-            sheetBackgroundColor = ModalBottomSheetDefaults.scrimColor,
-            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            content = {
-
-            }
-        )
+                }, sheetState = bottomSheetState,
+                sheetBackgroundColor = ModalBottomSheetDefaults.scrimColor,
+                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                content = {}
+            )
+        }
     }
 }

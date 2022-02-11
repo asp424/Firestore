@@ -1,21 +1,26 @@
 package com.lm.repository.data.sources.firestoresource
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.lm.repository.core.Resource
 import com.lm.repository.data.models.FirePath
+import com.lm.repository.data.models.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class FirestoreSourceImpl : FirestoreSource {
+class FirestoreSourceImpl(private val auth: FirebaseAuth) : FirestoreSource {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun takeAllDocumentsInCollection(path: FirePath) =
@@ -64,7 +69,38 @@ class FirestoreSourceImpl : FirestoreSource {
              }
          }
 
-     private suspend fun <T> runTask(task: Task<T>): T = suspendCoroutine { cont ->
+    override suspend fun readUser() {
+        if (auth.currentUser != null) {
+            dataFromDocument(
+                FirePath("users", auth.currentUser!!.uid)
+            ).collect {
+                if (it is Resource.Success) {
+                    it.data?.apply {
+                        userData = User(
+                            name = get("name")?.toString() ?: "",
+                            patr = get("patr")?.toString() ?: "",
+                            sName = get("sName")?.toString() ?: "",
+                            yo = get("yo")?.toString() ?: "",
+                            eMail = get("email")?.toString() ?: "",
+                            sex = get("sex")?.toString() ?: "",
+                            phone = get("phone")?.toString() ?: "",
+                            check1 = get("check1").toString().toBooleanStrictOrNull() ?: false,
+                            check2 = get("check2").toString().toBooleanStrictOrNull() ?: false,
+                            check3 = get("check3").toString().toBooleanStrictOrNull() ?: false,
+                            check4 = get("check4").toString().toBooleanStrictOrNull() ?: false,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
+    override fun user(): User = userData
+
+    private var userData = User()
+
+    private suspend fun <T> runTask(task: Task<T>): T = suspendCoroutine { cont ->
         runCatching { task.addOnSuccessListener { cont.resume(it) } }
     }
 

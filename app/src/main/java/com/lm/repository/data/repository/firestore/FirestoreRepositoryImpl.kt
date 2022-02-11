@@ -1,6 +1,7 @@
 package com.lm.repository.data.repository.firestore
 
 import com.lm.repository.data.models.FirePath
+import com.lm.repository.data.models.User
 import com.lm.repository.data.sources.firestoresource.FirestoreSource
 
 
@@ -30,4 +31,8 @@ class FirestoreRepositoryImpl (private val fireStoreSource: FirestoreSource) :
     override suspend fun deleteCollection(path: FirePath, onSuccess: () -> Unit) {
         with(fireStoreSource) { deleteCollection(path){ onSuccess() } }
         }
-    }
+
+    override fun user(): User = fireStoreSource.user()
+
+    override suspend fun readUser() = fireStoreSource.readUser()
+}

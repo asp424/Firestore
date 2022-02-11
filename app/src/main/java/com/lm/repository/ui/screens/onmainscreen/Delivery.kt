@@ -25,7 +25,9 @@ fun Delivery() {
         }
         BackHandler {
             coroutine.launch {
-                backAction(bottomSheetState, drawerState) { navController.navigate("MainScreen") }
+                backAction(bottomSheetState, drawerState) {
+                    mainViewModel.setDrawerHeader("Главная")
+                    navController.navigate("MainScreen") }
             }
         }
         backScreen = "Delivery"

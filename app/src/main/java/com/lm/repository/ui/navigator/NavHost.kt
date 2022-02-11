@@ -1,13 +1,11 @@
 package com.lm.repository.ui.navigator
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.lm.repository.di.MainDep
+import com.lm.repository.di.MainDep.depends
+import com.lm.repository.ui.navigator.animation.*
 import com.lm.repository.ui.screens.MainScreen
 import com.lm.repository.ui.screens.UserInfo
 import com.lm.repository.ui.screens.onmainscreen.Delivery
@@ -22,126 +20,61 @@ import com.lm.repository.ui.screens.onuserinfo.OrdersList
     androidx.compose.material.ExperimentalMaterialApi::class
 )
 @Composable
-fun NavHost() {
-    MainDep.depends.apply {
-        AnimatedNavHost(navController = navController, startDestination = "MainScreen") {
-            composable("MyProfile", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                })
+fun AnimatedNavHost() {
+    AnimatedNavHost(
+        navController = depends.navController,
+        startDestination = screen(Screens.MainScreen)
+    ) {
+        composable(screen(Screens.UserInfo), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.MainScreen) -> enterDownToUp
+                else -> enterLeftToRight
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.MainScreen) -> exitDownToUp
+                    else -> exitRightToLeft
+                }
+            }) { UserInfo() }
 
-            {
-                MyProfile()
+        composable(screen(Screens.MainScreen), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterLeftToRight
             }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitRightToLeft
+                }
+            }) { MainScreen() }
 
-            composable("MainScreen", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up, tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                MainScreen()
-            }
-            composable("UserInfo", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up, tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                UserInfo()
-            }
-            composable("Delivery", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                Delivery()
-            }
+        composable(screen(Screens.MyProfile), enterTransition = { enterRightToLeft },
+            exitTransition = {
+                exitLeftToRight
+            }) { MyProfile() }
 
-            composable("Restaurants", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                Restaurants()
-            }
+        composable(screen(Screens.Delivery), enterTransition = { enterRightToLeft },
+            exitTransition = { exitLeftToRight }) { Delivery() }
 
-            composable("Menu", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                Menu()
-            }
+        composable(screen(Screens.Restaurants), enterTransition = { enterRightToLeft },
+            exitTransition = { exitLeftToRight }) { Restaurants() }
 
-            composable("OrdersList", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                OrdersList()
-            }
-            composable("Addresses", enterTransition = { upToDown },
-                exitTransition = { downToUp }) { Addresses() }
-        }
+        composable(screen(Screens.Menu), enterTransition = { enterRightToLeft },
+            exitTransition = { exitLeftToRight }) { Menu() }
+
+        composable(screen(Screens.OrdersList), enterTransition = { enterRightToLeft },
+            exitTransition = { exitLeftToRight }) { OrdersList() }
+
+        composable(screen(Screens.Addresses), enterTransition = { enterRightToLeft },
+            exitTransition = { exitLeftToRight }) { Addresses() }
     }
 }
 
 
 
-@OptIn(ExperimentalAnimationApi::class)
-private val AnimatedContentScope<NavBackStackEntry>.upToDown
-get() = slideIntoContainer(AnimatedContentScope.SlideDirection.Down, tween(500))
-
-@OptIn(ExperimentalAnimationApi::class)
-private val AnimatedContentScope<NavBackStackEntry>.downToUp
-    get() = slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(500))
 
 
 

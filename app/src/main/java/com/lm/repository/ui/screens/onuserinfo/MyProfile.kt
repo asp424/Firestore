@@ -1,5 +1,6 @@
 package com.lm.repository.ui.screens.onuserinfo
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,12 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lm.repository.core.Resource
+import com.lm.repository.MainActivity
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.di.MainDep.depends
 import com.lm.repository.theme.back
@@ -31,49 +33,24 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalCoroutinesApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun MyProfile() {
-    var name by rememberSaveable { mutableStateOf("") }
-    var patr by rememberSaveable { mutableStateOf("") }
-    var sName by rememberSaveable { mutableStateOf("") }
-    var yo by rememberSaveable { mutableStateOf("") }
-    var email by rememberSaveable { mutableStateOf("") }
-    var sex by rememberSaveable { mutableStateOf("") }
-    var check1 by rememberSaveable { mutableStateOf(false) }
-    var check2 by rememberSaveable { mutableStateOf(false) }
-    var check3 by rememberSaveable { mutableStateOf(false) }
-    var check4 by rememberSaveable { mutableStateOf(false) }
-    var check5 by rememberSaveable { mutableStateOf(false) }
-    val start by rememberSaveable { mutableStateOf(2) }
-    val width = LocalConfiguration.current.screenWidthDp.dp / 2
-    var visibleDP by remember {
-        mutableStateOf(false)
-    }
     depends.apply {
-        depends.sharedPrefProvider.apply {
-            depends.mainViewModel.also { mVm ->
-                LaunchedEffect(start) {
-                    mVm.dataFromDocumentV(
-                        FirePath(
-                            "users",
-                            read()
-                        )
-                    ).collect {
-                        if (it is Resource.Success) {
-                            it.data?.apply {
-                                name = get("name")?.toString() ?: ""
-                                patr = get("patr")?.toString() ?: ""
-                                sName = get("sName")?.toString() ?: ""
-                                yo = get("yo")?.toString() ?: ""
-                                email = get("email")?.toString() ?: ""
-                                sex = get("sex")?.toString() ?: ""
-                                check1 = get("check1").toString().toBooleanStrictOrNull() ?: false
-                                check2 = get("check2").toString().toBooleanStrictOrNull() ?: false
-                                check3 = get("check3").toString().toBooleanStrictOrNull() ?: false
-                                check4 = get("check4").toString().toBooleanStrictOrNull() ?: false
-                            }
-                        }
-                    }
-                }
-
+        mainViewModel.user().also { user ->
+            var name by rememberSaveable { mutableStateOf(user.name) }
+            var patr by rememberSaveable { mutableStateOf(user.patr) }
+            var sName by rememberSaveable { mutableStateOf(user.sName) }
+            var yo by rememberSaveable { mutableStateOf(user.yo) }
+            var email by rememberSaveable { mutableStateOf(user.eMail) }
+            var sex by rememberSaveable { mutableStateOf(user.sex) }
+            var check1 by rememberSaveable { mutableStateOf(user.check1) }
+            var check2 by rememberSaveable { mutableStateOf(user.check2) }
+            var check3 by rememberSaveable { mutableStateOf(user.check3) }
+            var check4 by rememberSaveable { mutableStateOf(user.check4) }
+            var check5 by rememberSaveable { mutableStateOf(false) }
+            val width = LocalConfiguration.current.screenWidthDp.dp / 2
+            var visibleDP by remember {
+                mutableStateOf(false)
+            }
+            depends.sharedPrefProvider.apply {
                 ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.background(Gray)) {
                     Text(
                         text = "ВАШИ ДАННЫЕ",
@@ -309,38 +286,52 @@ fun MyProfile() {
                                     }
                                 }
                                 depends.sharedPrefProvider.apply {
-                                    Button(
-                                        onClick = {
-                                            mVm.putDataToDocument(
-                                                FirePath(
-                                                    "users", read()
-                                                ), hashMapOf(
-                                                    "name" to name,
-                                                    "patr" to patr,
-                                                    "sName" to sName,
-                                                    "yo" to yo,
-                                                    "email" to email,
-                                                    "sex" to sex,
-                                                    "check1" to check1.toString(),
-                                                    "check2" to check2.toString(),
-                                                    "check3" to check3.toString(),
-                                                    "check4" to check4.toString()
-                                                )
-                                            ) {}
-                                            navController.navigate("UserInfo")
-                                        },
-                                        modifier = Modifier
-                                            .padding(20.dp)
-                                            .fillMaxWidth()
-                                            .height(LocalConfiguration.current.screenHeightDp.dp / 14),
-                                        colors = ButtonDefaults.buttonColors(backgroundColor = back),
-                                        enabled = check5
-                                    ) {
-                                        Text(text = "Сохранить", fontSize = 16.sp)
+                                    (LocalContext.current as MainActivity).also { act ->
+                                        Button(
+                                            onClick = {
+                                                if (name.isNotEmpty()) {
+                                                    mainViewModel.user().also { u ->
+                                                        u.name = name
+                                                        u.sName = sName
+                                                        u.patr = patr
+                                                    }
+                                                    mainViewModel.putDataToDocument(
+                                                        FirePath(
+                                                            "users", read()
+                                                        ), hashMapOf(
+                                                            "name" to name,
+                                                            "patr" to patr,
+                                                            "sName" to sName,
+                                                            "yo" to yo,
+                                                            "email" to email,
+                                                            "sex" to sex,
+                                                            "check1" to check1.toString(),
+                                                            "check2" to check2.toString(),
+                                                            "check3" to check3.toString(),
+                                                            "check4" to check4.toString()
+                                                        )
+                                                    ) { }
+                                                    navController.navigate("UserInfo")
+                                                } else Toast.makeText(act, "У Вас нет имени", Toast.LENGTH_LONG).show()
+                                            },
+                                            modifier = Modifier
+                                                .padding(20.dp)
+                                                .fillMaxWidth()
+                                                .height(LocalConfiguration.current.screenHeightDp.dp / 14),
+                                            colors = ButtonDefaults.buttonColors(backgroundColor = back),
+                                            enabled = check5
+                                        ) {
+                                            Text(text = "Сохранить", fontSize = 16.sp)
+                                        }
+
                                     }
                                 }
                             }
                         }
+                    }
+
+                    BackHandler {
+                        navController.navigate("UserInfo")
                     }
                 }
                 Visibility(visible = visibleDP) {
@@ -350,9 +341,6 @@ fun MyProfile() {
                             yo = res
                         }
                     }
-                }
-                BackHandler {
-                    navController.navigate("UserInfo")
                 }
             }
         }

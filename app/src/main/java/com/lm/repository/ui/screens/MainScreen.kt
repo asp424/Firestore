@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,6 +77,7 @@ fun MainScreen() {
     val t by remember { mutableStateOf("") }
     val width = LocalConfiguration.current.screenWidthDp.dp
     val height = LocalConfiguration.current.screenHeightDp.dp
+
     depends.apply {
         LaunchedEffect(t) {
             (0 until 1000).asFlow().onEach { delay(3_000) }.collect {
@@ -117,7 +119,6 @@ fun MainScreen() {
                 listButtons.forEachIndexed { i, it ->
                     depends.fireAuth.apply {
                         depends.mainViewModel.also { mVm ->
-
                             Button(
                                 onClick = {
                                     coroutine.launch {
@@ -131,9 +132,17 @@ fun MainScreen() {
                                                 mVm,
                                                 "booking"
                                             )
-                                            else -> navController.navigate(
-                                                listButtonsNav[i]
-                                            )
+                                            else -> {
+                                                mainViewModel.setDrawerHeader(
+                                                    when(listButtonsNav[i]){
+                                                        "Menu" -> "Меню ресторана"
+                                                        "Restaurants" -> "Рестораны"
+                                                        "Delivery" -> "Доставка и самовывоз"
+                                                        else -> ""
+                                                    }
+                                                )
+                                                navController.navigate(listButtonsNav[i])
+                                            }
                                         }
                                     }
                                 },

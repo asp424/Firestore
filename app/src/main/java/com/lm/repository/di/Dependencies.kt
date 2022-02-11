@@ -26,33 +26,40 @@ import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
 import com.lm.repository.ui.viewmodelsfactory.MainViewModelFactory
 import com.lm.repository.ui.viewmodelsfactory.RegViewModelFactory
-import kotlinx.coroutines.AbstractCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-data class Depends @OptIn(ExperimentalCoroutinesApi::class,
+data class Main @OptIn(
+    ExperimentalCoroutinesApi::class,
     ExperimentalMaterialApi::class
 ) constructor(
     val fireAuth: FirebaseAuth,
     val sharedPrefProvider: SharedPrefProvider,
     val mainViewModel: MainViewModel,
-    val regViewModel: RegViewModel,
     val bottomSheetState: ModalBottomSheetState,
     val drawerState: DrawerState,
     val navController: NavHostController,
     val coroutine: CoroutineScope,
     val screenWidth: Dp,
     val screenHeight: Dp
-    )
+)
 
-val LocalDependencies = staticCompositionLocalOf<Depends> { error("No value provided") }
+data class Reg @OptIn(ExperimentalCoroutinesApi::class) constructor(
+    val regViewModel: RegViewModel
+)
 
-@OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterialApi::class,
+val LocalMainDependencies = staticCompositionLocalOf<Main> {
+    error("No value provided")
+}
+val LocalRegDependencies = staticCompositionLocalOf<Reg> { error("No value provided") }
+
+@OptIn(
+    ExperimentalCoroutinesApi::class, ExperimentalMaterialApi::class,
     androidx.compose.animation.ExperimentalAnimationApi::class
 )
 @Composable
-fun MainTheme(content: @Composable () -> Unit) {
+fun MainDependencies(content: @Composable () -> Unit) {
 
     val coroutine = rememberCoroutineScope()
 
@@ -60,20 +67,18 @@ fun MainTheme(content: @Composable () -> Unit) {
 
     val authInst = FirebaseAuth.getInstance()
 
-    val authRepository = AuthRepository.Base(authInst)
+    val sharedPrefProvider = SharedPrefProvider.Base(
+        (LocalContext.current as MainActivity)
+            .getSharedPreferences("id", MODE_PRIVATE)
+    )
 
-    val sharedPrefProvider = SharedPrefProvider.Base((LocalContext.current as MainActivity)
-        .getSharedPreferences("id", MODE_PRIVATE))
-
-    val regViewModel = ViewModelProvider(LocalContext.current as MainActivity,
-        RegViewModelFactory(RegRepository.Base(PhoneAuthOptions.newBuilder(authInst)
-            .setActivity(LocalContext.current as MainActivity), StatusCollector.Base(
-            authInst, authRepository,
-            dispatcher, sharedPrefProvider), authRepository)))[RegViewModel::class.java]
-
-    val mainViewModel = ViewModelProvider(LocalContext.current as MainActivity,
-        MainViewModelFactory(FirestoreRepositoryImpl(FirestoreSourceImpl()),
-            dispatcher))[MainViewModel::class.java]
+    val mainViewModel = ViewModelProvider(
+        LocalContext.current as MainActivity,
+        MainViewModelFactory(
+            FirestoreRepositoryImpl(FirestoreSourceImpl(authInst)),
+            dispatcher
+        )
+    )[MainViewModel::class.java]
 
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
@@ -85,11 +90,10 @@ fun MainTheme(content: @Composable () -> Unit) {
 
     val height = LocalConfiguration.current.screenHeightDp.dp
 
-    val all = Depends(
+    val all = Main(
         fireAuth = authInst,
         sharedPrefProvider = sharedPrefProvider,
         mainViewModel = mainViewModel,
-        regViewModel = regViewModel,
         bottomSheetState = bottomSheetState,
         drawerState = drawerState,
         navController = navController,
@@ -97,13 +101,53 @@ fun MainTheme(content: @Composable () -> Unit) {
         screenWidth = width,
         screenHeight = height
     )
-    CompositionLocalProvider(LocalDependencies provides all, content = content)
+    CompositionLocalProvider(LocalMainDependencies provides all, content = content)
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun RegDependencies(content: @Composable () -> Unit) {
+
+    val dispatcher = Dispatchers.IO
+
+    val authInst = FirebaseAuth.getInstance()
+
+    val authRepository = AuthRepository.Base(authInst)
+
+    val sharedPrefProvider = SharedPrefProvider.Base(
+        (LocalContext.current as MainActivity)
+            .getSharedPreferences("id", MODE_PRIVATE)
+    )
+
+    val regViewModel = ViewModelProvider(
+        LocalContext.current as MainActivity,
+        RegViewModelFactory(
+            RegRepository.Base(
+                PhoneAuthOptions.newBuilder(authInst)
+                    .setActivity(LocalContext.current as MainActivity), StatusCollector.Base(
+                    authInst, authRepository,
+                    dispatcher, sharedPrefProvider
+                ), authRepository
+            )
+        )
+    )[RegViewModel::class.java]
+
+    CompositionLocalProvider(
+        LocalRegDependencies provides Reg(regViewModel = regViewModel),
+        content = content
+    )
 }
 
 object MainDep {
-    val depends: Depends
+    val depends: Main
         @Composable
-        get() = LocalDependencies.current
+        get() = LocalMainDependencies.current
+}
+
+object RegDep {
+    val dependsReg: Reg
+        @Composable
+        get() = LocalRegDependencies.current
 }
 
 var bottomSheetContent = ""
