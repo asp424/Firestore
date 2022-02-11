@@ -1,11 +1,10 @@
-package com.lm.repository.ui.cells
+package com.lm.repository.ui.navigator
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.lm.repository.di.MainDep
@@ -128,24 +127,21 @@ fun NavHost() {
                 }) {
                 OrdersList()
             }
-            composable("Addresses",
-                enterTransition = {
-                    enterAnimation( AnimatedContentScope.SlideDirection.Down) },
-                exitTransition = {
-                   exitAnimation(AnimatedContentScope.SlideDirection.Down)
-                }) {
-                Addresses()
-            }
+            composable("Addresses", enterTransition = { upToDown },
+                exitTransition = { downToUp }) { Addresses() }
         }
     }
 }
 
 
-@OptIn(ExperimentalAnimationApi::class)
-private fun AnimatedContentScope<NavBackStackEntry>.enterAnimation(side: AnimatedContentScope.SlideDirection
-) = slideIntoContainer(side, tween(500))
 
 @OptIn(ExperimentalAnimationApi::class)
-private fun AnimatedContentScope<NavBackStackEntry>.exitAnimation(side: AnimatedContentScope.SlideDirection) =
-    slideOutOfContainer(side, animationSpec = tween(500))
+private val AnimatedContentScope<NavBackStackEntry>.upToDown
+get() = slideIntoContainer(AnimatedContentScope.SlideDirection.Down, tween(500))
+
+@OptIn(ExperimentalAnimationApi::class)
+private val AnimatedContentScope<NavBackStackEntry>.downToUp
+    get() = slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(500))
+
+
 

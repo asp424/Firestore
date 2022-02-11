@@ -1,6 +1,5 @@
 package com.lm.repository.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
@@ -12,15 +11,17 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class MainViewModel (
     private val repository: FirestoreRepository,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _bottomSheet = MutableStateFlow(1)
     val bottomSheet get() = _bottomSheet
+
+    private val _drawerHeader = MutableStateFlow("Главная")
+    val drawerHeader get() = _drawerHeader
 
     fun putDataToDocument(
         path: FirePath,
@@ -71,5 +72,7 @@ class MainViewModel @Inject constructor(
         }
 
     fun bottomSheetAction() = _bottomSheet.value++
+
+    fun setDrawerHeader(header: String) { _drawerHeader.value = header }
 
 }

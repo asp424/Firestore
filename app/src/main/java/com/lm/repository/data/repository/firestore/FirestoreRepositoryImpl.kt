@@ -2,9 +2,9 @@ package com.lm.repository.data.repository.firestore
 
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.data.sources.firestoresource.FirestoreSource
-import javax.inject.Inject
 
-class FirestoreRepositoryImpl @Inject constructor(private val fireStoreSource: FirestoreSource) :
+
+class FirestoreRepositoryImpl (private val fireStoreSource: FirestoreSource) :
     FirestoreRepository {
 
     override suspend fun putDataToDocumentR(

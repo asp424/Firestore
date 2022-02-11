@@ -12,12 +12,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
- class FirestoreSourceImpl @Inject constructor() : FirestoreSource {
+class FirestoreSourceImpl : FirestoreSource {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun takeAllDocumentsInCollection(path: FirePath) =

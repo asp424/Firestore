@@ -8,7 +8,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import javax.inject.Inject
 
 interface AuthRepository {
 
@@ -18,7 +17,7 @@ interface AuthRepository {
 
     fun signOut()
 
-    class Base @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
+    class Base (private val auth: FirebaseAuth) : AuthRepository {
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =
             authWithCredential(PhoneAuthProvider.getCredential(id, code))

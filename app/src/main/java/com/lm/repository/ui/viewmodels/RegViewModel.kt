@@ -6,10 +6,9 @@ import com.lm.repository.data.repository.registration.RegRepository
 import com.lm.repository.data.repository.registration.RegResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class RegViewModel @Inject constructor(
+class RegViewModel(
     private val regRepository: RegRepository
 ) : ViewModel() {
 

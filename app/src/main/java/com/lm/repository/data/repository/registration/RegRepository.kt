@@ -8,7 +8,6 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 interface RegRepository {
 
@@ -18,7 +17,7 @@ interface RegRepository {
 
     fun signOut()
 
-    class Base @Inject constructor(
+    class Base (
         private val phoneAuthOptionsBuilder: PhoneAuthOptions.Builder,
         private val statusCollector: StatusCollector,
         private val authRepository: AuthRepository

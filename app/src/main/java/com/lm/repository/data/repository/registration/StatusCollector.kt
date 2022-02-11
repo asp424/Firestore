@@ -4,20 +4,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.core.SharedPrefProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 interface StatusCollector {
 
     fun collect(response: RegResponse, onDone: (RegResponse) -> Unit)
 
-    class Base @Inject constructor(
+    class Base(
         private val auth: FirebaseAuth,
         private val authRepository: AuthRepository,
         private val dispatcher: CoroutineDispatcher,
         private val sharedPrefProvider: SharedPrefProvider,
-    ): StatusCollector{
+    ) : StatusCollector {
         override fun collect(response: RegResponse, onDone: (RegResponse) -> Unit) {
             when (response) {
 
