@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CustomTextField(
+    keyboardOptions: KeyboardType,
+    modifier: Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = "Placeholder",
@@ -41,7 +43,7 @@ fun CustomTextField(
         ),
         decorationBox = { innerTextField ->
             Row(
-                Modifier
+                modifier
                     .background(
                         MaterialTheme.colors.surface,
                         RoundedCornerShape(percent = 20)
@@ -68,7 +70,7 @@ fun CustomTextField(
                 }
                 if (trailingIcon != null) trailingIcon()
             }
-        }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        }, keyboardOptions = KeyboardOptions(keyboardType = keyboardOptions)
     )
 }
 

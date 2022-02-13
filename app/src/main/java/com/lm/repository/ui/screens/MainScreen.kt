@@ -1,15 +1,18 @@
 package com.lm.repository.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -18,6 +21,7 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,7 +32,7 @@ import com.lm.repository.R
 import com.lm.repository.di.MainDep.depends
 import com.lm.repository.di.backScreen
 import com.lm.repository.theme.back
-import com.lm.repository.ui.cells.CollapsedList
+import com.lm.repository.ui.cells.CollapsedPager
 import com.lm.repository.ui.utils.backAction
 import com.lm.repository.ui.utils.expandBottomSheet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,13 +70,15 @@ private val listButtonsNav = listOf(
 @Composable
 fun MainScreen() {
     depends.apply {
-        CollapsedList {
+
+        CollapsedPager {
             Text(
                 text = "XXXXXXXXXXXXXXXXX",
                 modifier = Modifier.padding(top = 20.dp)
             )
-
-            Column(modifier = Modifier.padding(top = 20.dp)) {
+            Column(modifier = Modifier
+                .padding(top = 20.dp)
+                ) {
                 listButtons.forEachIndexed { i, it ->
                     depends.fireAuth.apply {
                         depends.mainViewModel.also { mVm ->
@@ -195,8 +201,10 @@ fun MainScreen() {
                     )
                 }
             }
+
             (LocalContext.current as MainActivity).apply {
                 BackHandler {
+                    Log.d("My", "ass")
                     coroutine.launch {
                         backAction(
                             bottomSheetState,
@@ -205,6 +213,8 @@ fun MainScreen() {
                     }
                 }
             }
+
+
             backScreen = "MainScreen"
         }
     }

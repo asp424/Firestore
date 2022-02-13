@@ -61,6 +61,7 @@ fun UserInfo() {
                             else -> "${user.name} ${user.patr} ${user.sName}"
                         }, fontSize = 20.sp
                     )
+                    if (user.phone.isNotEmpty())
                     user.phone.apply {
                         Text(
                             text = "${substring(0, 2)} (${substring(2, 5)}) ${

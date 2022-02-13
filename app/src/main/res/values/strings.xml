@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Repository</string>
+    <string name="error_name">"Поле ""Имя"" не должно быть пустым"</string>
+
 </resources>

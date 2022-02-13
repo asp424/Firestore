@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.di.MainDep
 import com.lm.repository.di.MainDep.depends
+import com.lm.repository.ui.cells.CollapsedHeader
 import com.lm.repository.ui.cells.ColumnFMS
 import com.lm.repository.ui.viewmodels.MainViewModel
 import com.lm.repository.ui.viewmodels.RegViewModel
@@ -25,16 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun Addresses() {
     depends.apply {
-        ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.background(Color.Gray)) {
-            Text(
-                text = "ВАШИ АДРЕСА",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(top = 30.dp)
-            )
-            Text(text = "XXXXXXXXXX")
-        }
-
+        CollapsedHeader(header = "ВАШИ АДРЕСА") {}
         BackHandler {
             navController.navigate("UserInfo")
         }

@@ -29,20 +29,31 @@ class MainViewModel(
     private val _bottomSheet = MutableStateFlow(1)
     val bottomSheet get() = _bottomSheet
 
+    private val _internet = MutableStateFlow(false)
+    val internet get() = _internet
+
+    fun internet(status: Boolean) {
+        _internet.value = status
+    }
+
+    fun internetStatus() = _internet.value
+
     private val _drawerHeader = MutableStateFlow("Главная")
     val drawerHeader get() = _drawerHeader
 
     private var _authButton = MutableStateFlow(false)
     val authButton = _authButton
 
-    fun invisibleButton(){ _authButton.value = false }
+    fun invisibleButton() {
+        _authButton.value = false
+    }
 
     fun putDataToDocument(
         path: FirePath,
         data: HashMap<String, String>,
-        onSuccess: () -> Unit
+        onSuccess: (Any?) -> Unit
     ) = viewModelScope.launch(dispatcher) {
-        with(repository) { putDataToDocumentR(path, data) { onSuccess() } }
+        with(repository) { putDataToDocumentR(path, data) { onSuccess(it) } }
     }
 
     @ExperimentalCoroutinesApi
@@ -93,7 +104,7 @@ class MainViewModel(
 
     fun user(): User = repository.user()
 
-   fun readUser() = viewModelScope.launch {
+    fun readUser() = viewModelScope.launch {
         repository.readUser {
             _authButton.value = true
         }

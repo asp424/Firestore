@@ -15,19 +15,24 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lm.repository.MainActivity
+import com.lm.repository.R
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.di.MainDep.depends
 import com.lm.repository.theme.back
-import com.lm.repository.ui.cells.ColumnFMS
+import com.lm.repository.ui.cells.CollapsedHeader
 import com.lm.repository.ui.cells.DatePicker
+import com.lm.repository.ui.cells.TextAnim
 import com.lm.repository.ui.cells.Visibility
+import com.lm.repository.ui.navigator.Screens
+import com.lm.repository.ui.navigator.screen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalCoroutinesApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
@@ -50,20 +55,20 @@ fun MyProfile() {
             var visibleDP by remember {
                 mutableStateOf(false)
             }
+            var visibleButtonText by remember {
+                mutableStateOf(true)
+            }
+            var visibleProgress by remember {
+                mutableStateOf(false)
+            }
             depends.sharedPrefProvider.apply {
-                ColumnFMS(vertArr = Arrangement.Top, modifier = Modifier.background(Gray)) {
-                    Text(
-                        text = "ВАШИ ДАННЫЕ",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(top = 30.dp)
-                    )
-                    Text(text = "XXXXXXXXXX")
+                CollapsedHeader(header = "ВАШИ ДАННЫЕ") {
+
                     Card(
                         elevation = 20.dp, modifier = Modifier
                             .width(LocalConfiguration.current.screenWidthDp.dp)
                             .fillMaxHeight()
-                            .padding(20.dp)
+                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                     ) {
                         Column {
                             Column(
@@ -287,69 +292,114 @@ fun MyProfile() {
                                 }
                                 depends.sharedPrefProvider.apply {
                                     (LocalContext.current as MainActivity).also { act ->
-                                        Button(
-                                            onClick = {
-                                                if (name.isNotEmpty()) {
-                                                    mainViewModel.user().also { u ->
-                                                        u.name = name
-                                                        u.sName = sName
-                                                        u.patr = patr
-                                                        u.yo = yo
-                                                        u.eMail = email
-                                                        u.sex = sex
-                                                        u.check1 = check1
-                                                        u.check2 = check2
-                                                        u.check3 = check3
-                                                        u.check4 = check4
-                                                    }
-                                                    mainViewModel.putDataToDocument(
-                                                        FirePath(
-                                                            "users", read()
-                                                        ), hashMapOf(
-                                                            "name" to name,
-                                                            "patr" to patr,
-                                                            "sName" to sName,
-                                                            "yo" to yo,
-                                                            "email" to email,
-                                                            "sex" to sex,
-                                                            "check1" to check1.toString(),
-                                                            "check2" to check2.toString(),
-                                                            "check3" to check3.toString(),
-                                                            "check4" to check4.toString()
-                                                        )
-                                                    ) { }
-                                                    navController.navigate("UserInfo")
-                                                } else Toast.makeText(act, "У Вас нет имени", Toast.LENGTH_LONG).show()
-                                            },
+                                        Box(
                                             modifier = Modifier
-                                                .padding(20.dp)
-                                                .fillMaxWidth()
-                                                .height(LocalConfiguration.current.screenHeightDp.dp / 14),
-                                            colors = ButtonDefaults.buttonColors(backgroundColor = back),
-                                            enabled = check5
+                                                .height(screenHeight / 8)
+                                                .align(
+                                                    Alignment.CenterHorizontally
+                                                )
                                         ) {
-                                            Text(text = "Сохранить", fontSize = 16.sp)
-                                        }
+                                            Visibility(visible = visibleProgress) {
 
+                                                TextAnim(text = "Сохранение...")
+
+                                            }
+                                            Visibility(visible = visibleButtonText) {
+                                                (LocalContext.current as MainActivity).apply {
+                                                    stringResource(id = R.string.error_name).also {
+                                                        Button(
+                                                            onClick = {
+                                                                if (!mainViewModel.internetStatus()) {
+                                                                    visibleButtonText = false
+                                                                    visibleProgress = true
+                                                                    if (name.isNotEmpty()) {
+                                                                        mainViewModel.user()
+                                                                            .also { u ->
+                                                                                u.name = name
+                                                                                u.sName = sName
+                                                                                u.patr = patr
+                                                                                u.yo = yo
+                                                                                u.eMail = email
+                                                                                u.sex = sex
+                                                                                u.check1 = check1
+                                                                                u.check2 = check2
+                                                                                u.check3 = check3
+                                                                                u.check4 = check4
+                                                                            }
+                                                                        mainViewModel.putDataToDocument(
+                                                                            FirePath(
+                                                                                "users", read()
+                                                                            ), hashMapOf(
+                                                                                "name" to name,
+                                                                                "patr" to patr,
+                                                                                "sName" to sName,
+                                                                                "yo" to yo,
+                                                                                "email" to email,
+                                                                                "sex" to sex,
+                                                                                "check1" to check1.toString(),
+                                                                                "check2" to check2.toString(),
+                                                                                "check3" to check3.toString(),
+                                                                                "check4" to check4.toString()
+                                                                            )
+                                                                        ) {
+                                                                            visibleButtonText = true
+                                                                            visibleProgress = false
+                                                                            coroutine.launch {
+                                                                                navController.navigate(
+                                                                                    "UserInfo"
+                                                                                )
+                                                                            }
+                                                                        }
+                                                                    } else Toast.makeText(
+                                                                        act,
+                                                                        it,
+                                                                        Toast.LENGTH_LONG
+                                                                    ).show()
+                                                                } else Toast.makeText(
+                                                                    this,
+                                                                    "Отсутствует интернет",
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            }, modifier = Modifier
+                                                                .padding(20.dp)
+                                                                .fillMaxWidth()
+                                                                .height(LocalConfiguration.current.screenHeightDp.dp / 14),
+                                                            colors = ButtonDefaults.buttonColors(
+                                                                backgroundColor = back
+                                                            ),
+                                                            enabled = check5
+                                                        ) {
+
+                                                            Text(
+                                                                text = "Сохранить",
+                                                                fontSize = 16.sp
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
 
-                    BackHandler {
-                        navController.navigate("UserInfo")
+                            BackHandler {
+                                navController.navigate(screen(Screens.UserInfo))
+                            }
+                        }
+
                     }
                 }
-                Visibility(visible = visibleDP) {
-                    DatePicker { bool, res ->
-                        visibleDP = false
-                        if (bool) {
-                            yo = res
+                    Visibility(visible = visibleDP) {
+                        DatePicker { bool, res ->
+                            visibleDP = false
+                            if (bool) {
+                                yo = res
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
+

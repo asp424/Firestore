@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CollapsedList(content: @Composable (ColumnScope) -> Unit) {
+fun CollapsedPager(content: @Composable (ColumnScope) -> Unit) {
     val t by remember { mutableStateOf("") }
     val itemHeight = LocalConfiguration.current.screenHeightDp.dp / 3
     val state = rememberScrollState()
@@ -41,6 +41,7 @@ fun CollapsedList(content: @Composable (ColumnScope) -> Unit) {
         }
         if (height <= itemHeight && state.value != state.maxValue)
             LaunchedEffect(state.value) {
+                if (itemHeight - state.value.dp / 3 >= 0.dp)
                 height = itemHeight - state.value.dp / 3
             }
 

@@ -12,7 +12,7 @@ interface FirestoreRepository {
 
     suspend fun putDataToDocumentR(
         path: FirePath, data: HashMap<String, String>,
-        onSuccess: () -> Unit
+        onSuccess: (Any?) -> Unit
     )
 
     suspend fun allDocumentsInCollection(path: FirePath): Flow<Resource<QuerySnapshot?>>

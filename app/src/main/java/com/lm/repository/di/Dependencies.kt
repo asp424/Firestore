@@ -42,7 +42,8 @@ data class Main @OptIn(
     val navController: NavHostController,
     val coroutine: CoroutineScope,
     val screenWidth: Dp,
-    val screenHeight: Dp
+    val screenHeight: Dp,
+    val swipeState: SwipeableState<Int>
 )
 
 data class Reg @OptIn(ExperimentalCoroutinesApi::class) constructor(
@@ -86,6 +87,8 @@ fun MainDependencies(content: @Composable () -> Unit) {
 
     val navController = rememberAnimatedNavController()
 
+    val swipeState = rememberSwipeableState(0)
+
     val width = LocalConfiguration.current.screenWidthDp.dp
 
     val height = LocalConfiguration.current.screenHeightDp.dp
@@ -99,7 +102,8 @@ fun MainDependencies(content: @Composable () -> Unit) {
         navController = navController,
         coroutine = coroutine,
         screenWidth = width,
-        screenHeight = height
+        screenHeight = height,
+        swipeState = swipeState
     )
     CompositionLocalProvider(LocalMainDependencies provides all, content = content)
 }

@@ -12,13 +12,16 @@ fun Visibility(visible: Boolean, content: @Composable (AnimatedVisibilityScope.(
     val density = LocalDensity.current
     AnimatedVisibility(
         visible = visible,
+        enter = slideInVertically(
 
-        enter = slideInHorizontally(initialOffsetX = { with(density) { -40.dp.roundToPx() } })
+            initialOffsetY = { with(density) { -40.dp.roundToPx() } }
+        ) + expandVertically(
 
-                + expandVertically(expandFrom = Alignment.Bottom)
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(
 
-                + fadeIn(initialAlpha = 0.3f),
-
+            initialAlpha = 0.3f
+        ),
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
         content(this)

@@ -1,5 +1,6 @@
 package com.lm.repository.ui.navigator
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -28,11 +29,10 @@ import kotlinx.coroutines.launch
 fun DrawerTopBar() {
     depends.apply {
         val visibleButton by mainViewModel.authButton.collectAsState()
-        var visibleProgress by remember {
-            mutableStateOf(true)
-        }
 
-        LaunchedEffect(visibleButton){
+        var visibleProgress by remember { mutableStateOf(true) }
+
+        LaunchedEffect(visibleButton) {
             visibleProgress = !visibleButton
         }
 
@@ -101,3 +101,4 @@ fun DrawerTopBar() {
         }
     }
 }
+

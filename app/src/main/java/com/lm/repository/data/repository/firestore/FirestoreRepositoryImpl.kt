@@ -11,8 +11,8 @@ class FirestoreRepositoryImpl (private val fireStoreSource: FirestoreSource) :
 
     override suspend fun putDataToDocumentR(
         path: FirePath, data: HashMap<String, String>,
-        onSuccess: () -> Unit
-    ) = with(fireStoreSource){ putDataToDocument(path, data) { onSuccess() } }
+        onSuccess: (Any?) -> Unit
+    ) = with(fireStoreSource){ putDataToDocument(path, data) { onSuccess(it) } }
 
     override suspend fun allDocumentsInCollection(path: FirePath) =
         with(fireStoreSource) { takeAllDocumentsInCollection(path) }

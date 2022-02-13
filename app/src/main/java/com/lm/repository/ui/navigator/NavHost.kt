@@ -28,12 +28,18 @@ fun AnimatedNavHost() {
         composable(screen(Screens.UserInfo), enterTransition = {
             when (initialState.destination.route) {
                 screen(Screens.MainScreen) -> enterDownToUp
+                screen(Screens.Delivery) -> enterDownToUp
+                screen(Screens.Menu) -> enterDownToUp
+                screen(Screens.Restaurants) -> enterDownToUp
                 else -> enterLeftToRight
             }
         },
             exitTransition = {
                 when (targetState.destination.route) {
                     screen(Screens.MainScreen) -> exitDownToUp
+                    screen(Screens.Delivery) -> exitDownToUp
+                    screen(Screens.Menu) -> exitDownToUp
+                    screen(Screens.Restaurants) -> exitDownToUp
                     else -> exitRightToLeft
                 }
             }) { UserInfo() }
@@ -56,14 +62,44 @@ fun AnimatedNavHost() {
                 exitLeftToRight
             }) { MyProfile() }
 
-        composable(screen(Screens.Delivery), enterTransition = { enterRightToLeft },
-            exitTransition = { exitLeftToRight }) { Delivery() }
+        composable(screen(Screens.Delivery), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Delivery() }
 
-        composable(screen(Screens.Restaurants), enterTransition = { enterRightToLeft },
-            exitTransition = { exitLeftToRight }) { Restaurants() }
+        composable(screen(Screens.Restaurants), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Restaurants() }
 
-        composable(screen(Screens.Menu), enterTransition = { enterRightToLeft },
-            exitTransition = { exitLeftToRight }) { Menu() }
+        composable(screen(Screens.Menu), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Menu() }
 
         composable(screen(Screens.OrdersList), enterTransition = { enterRightToLeft },
             exitTransition = { exitLeftToRight }) { OrdersList() }

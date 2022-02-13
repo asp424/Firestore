@@ -1,6 +1,7 @@
 package com.lm.repository.data.sources.firestoresource
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -36,7 +37,9 @@ class FirestoreSourceImpl(private val auth: FirebaseAuth) : FirestoreSource {
     ) = with(path.collection.col) {
         if (path.document.isNotEmpty())
             onSuccess(runTask(document(path.document).set(data, SetOptions.merge())))
-        else onSuccess(runTask(add(data)))
+        else onSuccess(runTask(add(data).addOnFailureListener { ex ->
+            ex.message.toString()
+        }))
     }
 
     override suspend fun deleteDocument(path: FirePath, onSuccess: (Any?) -> Unit) =
