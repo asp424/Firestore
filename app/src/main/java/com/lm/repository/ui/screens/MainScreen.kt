@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -17,29 +17,21 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.lm.repository.MainActivity
 import com.lm.repository.R
 import com.lm.repository.di.MainDep.depends
 import com.lm.repository.di.backScreen
 import com.lm.repository.theme.back
-import com.lm.repository.ui.cells.ColumnFMS
+import com.lm.repository.ui.cells.CollapsedList
 import com.lm.repository.ui.utils.backAction
 import com.lm.repository.ui.utils.expandBottomSheet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
@@ -73,43 +65,8 @@ private val listButtonsNav = listOf(
 )
 @Composable
 fun MainScreen() {
-    val pagerState = rememberPagerState()
-    val t by remember { mutableStateOf("") }
-    val width = LocalConfiguration.current.screenWidthDp.dp
-    val height = LocalConfiguration.current.screenHeightDp.dp
-
     depends.apply {
-        LaunchedEffect(t) {
-            (0 until 1000).asFlow().onEach { delay(3_000) }.collect {
-                pagerState.apply {
-                    if (currentPage == list.lastIndex) animateScrollToPage(0)
-                    else animateScrollToPage(currentPage + 1)
-                }
-            }
-        }
-        ColumnFMS(
-            vertArr = Arrangement.Top,
-            modifier = Modifier.padding(top = 59.dp)
-        ) {
-            Box {
-                HorizontalPager(count = list.size, state = pagerState) { page ->
-                    Image(
-                        painter = painterResource(id = list[page]),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier =
-                        Modifier.size(width, height / 3 - width / 12)
-                    )
-                }
-
-                HorizontalPagerIndicator(
-                    pagerState = pagerState,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.BottomCenter),
-                )
-            }
-
+        CollapsedList {
             Text(
                 text = "XXXXXXXXXXXXXXXXX",
                 modifier = Modifier.padding(top = 20.dp)
@@ -134,7 +91,7 @@ fun MainScreen() {
                                             )
                                             else -> {
                                                 mainViewModel.setDrawerHeader(
-                                                    when(listButtonsNav[i]){
+                                                    when (listButtonsNav[i]) {
                                                         "Menu" -> "Меню ресторана"
                                                         "Restaurants" -> "Рестораны"
                                                         "Delivery" -> "Доставка и самовывоз"
@@ -148,9 +105,9 @@ fun MainScreen() {
                                 },
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
-                                    .width(width)
+                                    .width(screenWidth)
                                     .padding(start = 40.dp, end = 40.dp)
-                                    .height(height / 16),
+                                    .height(screenHeight / 16),
                                 colors = ButtonDefaults.buttonColors(backgroundColor = back),
                                 shape = RoundedCornerShape(8.dp),
                                 elevation = ButtonDefaults.elevation(
@@ -183,7 +140,7 @@ fun MainScreen() {
                                 elevation = 20.dp,
                                 modifier =
                                 Modifier
-                                    .width(width / 2)
+                                    .width(screenWidth / 2)
                                     .height(280.dp)
                                     .padding(
                                         top = 15.dp,
@@ -218,7 +175,7 @@ fun MainScreen() {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .padding(top = 20.dp)
-                        .width(width)
+                        .width(screenWidth)
                         .height(70.dp)
                 )
                 Row(

@@ -26,8 +26,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun DrawerTopBar() {
-
-
     depends.apply {
         val visibleButton by mainViewModel.authButton.collectAsState()
         var visibleProgress by remember {
