@@ -39,9 +39,8 @@ fun CollapsedList(content: @Composable (ColumnScope) -> Unit) {
                 }
             }
         }
-
+        if (height <= itemHeight && state.value != state.maxValue)
             LaunchedEffect(state.value) {
-                if (height <= itemHeight && state.value != state.maxValue)
                 height = itemHeight - state.value.dp / 3
             }
 
