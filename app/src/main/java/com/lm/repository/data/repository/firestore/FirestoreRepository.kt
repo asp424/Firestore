@@ -29,6 +29,6 @@ interface FirestoreRepository {
 
     fun user (): User
 
-    suspend fun readUser()
+    suspend fun readUser(onSuccess: () -> Unit)
 
 }

@@ -32,7 +32,7 @@ interface FirestoreSource {
 
     fun user(): User
 
-    suspend fun readUser()
+    suspend fun readUser(onSuccess: () -> Unit)
 
 }
 

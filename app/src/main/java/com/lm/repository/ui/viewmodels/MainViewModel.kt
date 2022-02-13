@@ -15,7 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MainViewModel (
+class MainViewModel(
     private val repository: FirestoreRepository,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel(), DefaultLifecycleObserver {
@@ -31,6 +31,11 @@ class MainViewModel (
 
     private val _drawerHeader = MutableStateFlow("Главная")
     val drawerHeader get() = _drawerHeader
+
+    private var _authButton = MutableStateFlow(false)
+    val authButton = _authButton
+
+    fun invisibleButton(){ _authButton.value = false }
 
     fun putDataToDocument(
         path: FirePath,
@@ -82,10 +87,15 @@ class MainViewModel (
 
     fun bottomSheetAction() = _bottomSheet.value++
 
-    fun setDrawerHeader(header: String) { _drawerHeader.value = header }
+    fun setDrawerHeader(header: String) {
+        _drawerHeader.value = header
+    }
 
     fun user(): User = repository.user()
 
-    fun readUser() = viewModelScope.launch { repository.readUser() }
-
+   fun readUser() = viewModelScope.launch {
+        repository.readUser {
+            _authButton.value = true
+        }
+    }
 }

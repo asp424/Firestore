@@ -3,6 +3,7 @@ package com.lm.repository.data.repository.firestore
 import com.lm.repository.data.models.FirePath
 import com.lm.repository.data.models.User
 import com.lm.repository.data.sources.firestoresource.FirestoreSource
+import com.lm.repository.ui.screens.registration.utils.onSuccess
 
 
 class FirestoreRepositoryImpl (private val fireStoreSource: FirestoreSource) :
@@ -34,5 +35,5 @@ class FirestoreRepositoryImpl (private val fireStoreSource: FirestoreSource) :
 
     override fun user(): User = fireStoreSource.user()
 
-    override suspend fun readUser() = fireStoreSource.readUser()
+    override suspend fun readUser(onSuccess: () -> Unit) = fireStoreSource.readUser{ onSuccess()}
 }

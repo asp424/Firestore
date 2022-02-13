@@ -294,6 +294,13 @@ fun MyProfile() {
                                                         u.name = name
                                                         u.sName = sName
                                                         u.patr = patr
+                                                        u.yo = yo
+                                                        u.eMail = email
+                                                        u.sex = sex
+                                                        u.check1 = check1
+                                                        u.check2 = check2
+                                                        u.check3 = check3
+                                                        u.check4 = check4
                                                     }
                                                     mainViewModel.putDataToDocument(
                                                         FirePath(

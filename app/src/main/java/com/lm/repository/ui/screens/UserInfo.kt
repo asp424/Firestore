@@ -64,10 +64,7 @@ fun UserInfo() {
                     user.phone.apply {
                         Text(
                             text = "${substring(0, 2)} (${substring(2, 5)}) ${
-                                substring(
-                                    5,
-                                    8
-                                )
+                                substring(5, 8)
                             }-${
                                 substring(8, 10)
                             }-${substring(10, 12)} ",
@@ -176,6 +173,7 @@ fun UserInfo() {
             }
             BackHandler {
                 navController.navigate(backScreen)
+
             }
         }
     }

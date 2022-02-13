@@ -69,7 +69,7 @@ class FirestoreSourceImpl(private val auth: FirebaseAuth) : FirestoreSource {
              }
          }
 
-    override suspend fun readUser() {
+    override suspend fun readUser(onSuccess: () -> Unit) {
         if (auth.currentUser != null) {
             dataFromDocument(
                 FirePath("users", auth.currentUser!!.uid)
@@ -90,9 +90,10 @@ class FirestoreSourceImpl(private val auth: FirebaseAuth) : FirestoreSource {
                             check4 = get("check4").toString().toBooleanStrictOrNull() ?: false,
                         )
                     }
+                    onSuccess()
                 }
             }
-        }
+        } else onSuccess()
     }
 
 
