@@ -72,7 +72,7 @@ fun DrawerTopBar() {
                     modifier = Modifier.padding(top = 3.dp)
                 )
             }
-            fireAuth.also { auth ->
+            fireAuth?.also { auth ->
                 mainViewModel.also {
                     Box {
                         Visibility(visible = visibleButton) {

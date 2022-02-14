@@ -18,6 +18,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.lm.repository.MainActivity
 import com.lm.repository.core.SharedPrefProvider
 import com.lm.repository.data.repository.firestore.FirestoreRepositoryImpl
+import com.lm.repository.data.repository.internet.InternetStatusProvider
 import com.lm.repository.data.repository.registration.AuthRepository
 import com.lm.repository.data.repository.registration.RegRepository
 import com.lm.repository.data.repository.registration.StatusCollector
@@ -34,7 +35,7 @@ data class Main @OptIn(
     ExperimentalCoroutinesApi::class,
     ExperimentalMaterialApi::class
 ) constructor(
-    val fireAuth: FirebaseAuth,
+    var fireAuth: FirebaseAuth?,
     val sharedPrefProvider: SharedPrefProvider,
     val mainViewModel: MainViewModel,
     val bottomSheetState: ModalBottomSheetState,
@@ -73,11 +74,13 @@ fun MainDependencies(content: @Composable () -> Unit) {
             .getSharedPreferences("id", MODE_PRIVATE)
     )
 
+    val internetStatusProvider = InternetStatusProvider.Base()
+
     val mainViewModel = ViewModelProvider(
         LocalContext.current as MainActivity,
         MainViewModelFactory(
             FirestoreRepositoryImpl(FirestoreSourceImpl(authInst)),
-            dispatcher
+            dispatcher, internetStatusProvider
         )
     )[MainViewModel::class.java]
 

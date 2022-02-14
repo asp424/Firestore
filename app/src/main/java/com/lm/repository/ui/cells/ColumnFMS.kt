@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 fun ColumnFMS(
     paddingBottom: Dp = 0.dp,
     vertArr: Arrangement.Vertical = Arrangement.Center,
+    horArr: Alignment.Horizontal = Alignment.CenterHorizontally,
     modifier: Modifier = Modifier,
     inColumn: @Composable (ColumnScope) -> Unit
 ) {
@@ -22,7 +23,7 @@ fun ColumnFMS(
             .fillMaxSize()
             .padding(bottom = paddingBottom)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = horArr,
         verticalArrangement = vertArr
     ) {
         inColumn(this)

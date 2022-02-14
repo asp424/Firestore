@@ -155,7 +155,7 @@ fun UserInfo() {
                     val mainActivity = LocalContext.current as MainActivity
                     Button(
                         onClick = {
-                            fireAuth.signOut()
+                            fireAuth?.signOut()
                             Toast.makeText(
                                 mainActivity,
                                 "Вы вышли из аккаунта",

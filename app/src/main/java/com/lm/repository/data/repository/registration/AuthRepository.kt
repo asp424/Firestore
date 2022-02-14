@@ -1,9 +1,11 @@
 package com.lm.repository.data.repository.registration
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -27,13 +29,22 @@ interface AuthRepository {
 
             auth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        trySendBlocking(RegResponse.OnSuccess(task.result?.user?.uid))
+                        Log.d("My", "canccellll")
+                        cancel()
+                    }
+                }
+                .addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message))
+                    Log.d("My", "canccelllleeddd")
+                cancel()
+                }
 
-                    if (task.isSuccessful)
-                        trySendBlocking(RegResponse.OnSuccess(task.result?.user?.uid)) }
+            awaitClose{
+                Log.d("My", "canccelllleeddduuuul")
+                cancel()
 
-                .addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message)) }
-
-            awaitClose()
+            }
         }
 
         override fun signOut() = auth.signOut()

@@ -8,6 +8,10 @@ import com.lm.repository.di.MainDep.depends
 import com.lm.repository.ui.navigator.animation.*
 import com.lm.repository.ui.screens.MainScreen
 import com.lm.repository.ui.screens.UserInfo
+import com.lm.repository.ui.screens.ondrawer.About
+import com.lm.repository.ui.screens.ondrawer.Events
+import com.lm.repository.ui.screens.ondrawer.Promotions
+import com.lm.repository.ui.screens.ondrawer.Reference
 import com.lm.repository.ui.screens.onmainscreen.Delivery
 import com.lm.repository.ui.screens.onmainscreen.Menu
 import com.lm.repository.ui.screens.onmainscreen.Restaurants
@@ -87,6 +91,58 @@ fun AnimatedNavHost() {
                     else -> exitLeftToRight
                 }
             }) { Restaurants() }
+
+        composable(screen(Screens.About), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { About() }
+
+        composable(screen(Screens.Promotions), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Promotions() }
+
+        composable(screen(Screens.Reference), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Reference() }
+
+        composable(screen(Screens.Events), enterTransition = {
+            when (initialState.destination.route) {
+                screen(Screens.UserInfo) -> enterDownToUp
+                else -> enterRightToLeft
+            }
+        },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    screen(Screens.UserInfo) -> exitDownToUp
+                    else -> exitLeftToRight
+                }
+            }) { Events() }
 
         composable(screen(Screens.Menu), enterTransition = {
             when (initialState.destination.route) {

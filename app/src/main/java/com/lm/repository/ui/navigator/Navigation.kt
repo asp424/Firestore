@@ -13,12 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lm.repository.core.InternetListener
 import com.lm.repository.di.MainDep.depends
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
@@ -44,12 +42,7 @@ fun Navigation() {
 
         LocalLifecycleOwner.current.lifecycle.addObserver(depends.mainViewModel)
 
-        InternetListener(callback = {
-            mainViewModel.internet(it)
-        })
-
         LaunchedEffect(internet) {
-            Log.d("My", internet.toString())
             if (internet) {
                 color = Black
                 text = "Отсутствует интернет"
@@ -59,8 +52,7 @@ fun Navigation() {
                     if (offsetY != -100f)
                         offsetY -= 1f
                 }
-            }
-            else {
+            } else {
                 if (offsetY == -100f) {
                     color = Green
                     text = "Вы снова в сети"
@@ -93,6 +85,12 @@ fun Navigation() {
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = screenHeight / 100)
                 )
+            }
+        }
+        DisposableEffect(true) {
+            onDispose {
+                Log.d("My", "null")
+                fireAuth = null
             }
         }
     }

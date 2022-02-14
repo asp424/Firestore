@@ -1,8 +1,10 @@
 package com.lm.repository.data.repository.registration
 
+import android.util.Log
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +19,7 @@ interface RegRepository {
 
     fun signOut()
 
-    class Base (
+    class Base(
         private val phoneAuthOptionsBuilder: PhoneAuthOptions.Builder,
         private val statusCollector: StatusCollector,
         private val authRepository: AuthRepository
@@ -32,11 +34,16 @@ interface RegRepository {
                         .setTimeout(timeOut, TimeUnit.SECONDS)
                         .setCallbacks(
                             RegCallback { response ->
-                            statusCollector.collect(response) { trySendBlocking(it) }
-                        }).build()
+                                statusCollector.collect(response) {
+                                    trySendBlocking(it)
+                                    if (it is RegResponse.OnSuccess || it is RegResponse.OnError) {
+                                        cancel()
+                                    }
+                                }
+                            }).build()
                 )
             }
-            awaitClose()
+            awaitClose { cancel() }
         }
 
         override suspend fun authWithCode(id: String, code: String): Flow<RegResponse> =

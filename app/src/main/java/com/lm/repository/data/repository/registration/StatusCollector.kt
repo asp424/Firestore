@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.lm.repository.core.SharedPrefProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 interface StatusCollector {
@@ -18,17 +19,19 @@ interface StatusCollector {
     ) : StatusCollector {
         override fun collect(response: RegResponse, onDone: (RegResponse) -> Unit) {
             when (response) {
-
                 is RegResponse.Credential -> {
                     onDone(RegResponse.SmsCode(response.credential?.smsCode.toString()))
                     with(auth.currentUser?.uid) {
                         if (this == null) CoroutineScope(dispatcher).launch {
                             response.credential?.let { cred ->
                                 authRepository.authWithCredential(cred)
-                                    .collect { onDone(it) }
+                                    .collect { onDone(it)
+                                    cancel()
+                                    }
                             }
                         }
                         else onDone(RegResponse.OnSuccess(this))
+
                     }
                 }
 
