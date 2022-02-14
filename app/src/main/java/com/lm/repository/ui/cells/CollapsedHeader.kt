@@ -24,12 +24,11 @@ import kotlinx.coroutines.flow.onEach
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun CollapsedHeader(header: String, content: @Composable (ColumnScope) -> Unit) {
-    val t by remember { mutableStateOf("") }
-    val itemHeight = LocalConfiguration.current.screenHeightDp.dp / 8
-    val state = rememberScrollState()
-    val pagerState = rememberPagerState()
-    var height by remember { mutableStateOf(itemHeight) }
+
     depends.apply {
+        val itemHeight = screenHeight / 8
+        val state = rememberScrollState()
+        var height by remember { mutableStateOf(itemHeight) }
         if (height <= itemHeight && state.value != state.maxValue)
             LaunchedEffect(state.value) {
                 if (itemHeight - state.value.dp / 3 >= 0.dp)

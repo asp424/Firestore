@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.lm.repository.MainActivity
 import com.lm.repository.di.MainDep.depends
 import com.lm.repository.di.bottomSheetContent
+import com.lm.repository.ui.cells.BookingAnim
 import com.lm.repository.ui.screens.ondrawer.Feedback
 import com.lm.repository.ui.screens.onmainscreen.BonusCard
 import com.lm.repository.ui.screens.onmainscreen.Booking
@@ -79,7 +80,7 @@ val dens = LocalDensity.current.density
                                     }
                                 )
                             "bonusCard" -> BonusCard()
-                            "booking" -> Booking()
+                            "booking" -> BookingAnim()
                             "feedback" -> Feedback()
                             "" -> Text("ass", modifier = Modifier.size(1.dp))
                         }
