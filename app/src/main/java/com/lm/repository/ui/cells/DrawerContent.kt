@@ -70,6 +70,18 @@ fun DrawerContent() {
                     Modifier
                         .fillMaxWidth()
                         .clickable {
+                            mainViewModel.setDrawerHeader(
+                                when (listButtonsNav[i]) {
+                                    "Menu" -> "Меню ресторана"
+                                    "Restaurants" -> "Рестораны"
+                                    "Delivery" -> "Доставка и самовывоз"
+                                    "Events" -> "События"
+                                    "Promotions" -> "Акции"
+                                    "About" -> "О нас"
+                                    "Reference" -> "Справка"
+                                    else -> ""
+                                }
+                            )
                             when (i) {
                                 0 -> navController.navigate(screen(Screens.Delivery))
                                 1 -> navController.navigate(screen(Screens.Restaurants))
@@ -116,14 +128,22 @@ fun DrawerContent() {
                     tint = Color.White
                 )
                 depends.fireAuth.apply {
-                    Row(Modifier.fillMaxWidth().clickable {
-                        expandBottomSheet(
-                            mainViewModel,
-                            if (this@apply?.currentUser != null) "bonusCard"
-                            else "reg"
-                        )
-                        coroutine.launch { drawerState.animateTo(DrawerValue.Closed, tween(700)) }
-                    }) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                expandBottomSheet(
+                                    mainViewModel,
+                                    if (this@apply?.currentUser != null) "bonusCard"
+                                    else "reg"
+                                )
+                                coroutine.launch {
+                                    drawerState.animateTo(
+                                        DrawerValue.Closed,
+                                        tween(700)
+                                    )
+                                }
+                            }) {
                         Text(
                             text = "БОНУСНАЯ КАРТА",
                             color = Color.White,
@@ -141,7 +161,13 @@ fun DrawerContent() {
             )
             Box(contentAlignment = Center, modifier = Modifier.fillMaxWidth()) {
                 Button(
-                    onClick = { }, modifier = Modifier
+                    onClick = {
+                        expandBottomSheet(
+                            mainViewModel,
+                            "booking"
+                        )
+                        coroutine.launch { drawerState.animateTo(DrawerValue.Closed, tween(700)) }
+                    }, modifier = Modifier
                         .padding(top = 10.dp)
                         .width(screenWidth - screenWidth / 3)
                         .height(screenHeight / 16),

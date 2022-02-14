@@ -26,7 +26,7 @@ fun Promotions() {
         BackHandler {
             coroutine.launch {
                 backAction(bottomSheetState, drawerState) {
-                    mainViewModel.setDrawerHeader("Акции")
+                    mainViewModel.setDrawerHeader("Главная")
                     navController.navigate("MainScreen") }
             }
         }

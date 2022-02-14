@@ -1,6 +1,5 @@
 package com.lm.repository.ui.navigator
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

@@ -26,7 +26,7 @@ fun Reference() {
         BackHandler {
             coroutine.launch {
                 backAction(bottomSheetState, drawerState) {
-                    mainViewModel.setDrawerHeader("Справка")
+                    mainViewModel.setDrawerHeader("Главная")
                     navController.navigate("MainScreen") }
             }
         }
