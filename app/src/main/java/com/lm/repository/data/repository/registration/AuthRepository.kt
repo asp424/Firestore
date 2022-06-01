@@ -31,17 +31,14 @@ interface AuthRepository {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         trySendBlocking(RegResponse.OnSuccess(task.result?.user?.uid))
-                        Log.d("My", "canccellll")
                         cancel()
                     }
                 }
                 .addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message))
-                    Log.d("My", "canccelllleeddd")
-                cancel()
+                    cancel()
                 }
 
             awaitClose{
-                Log.d("My", "canccelllleeddduuuul")
                 cancel()
 
             }
