@@ -34,17 +34,16 @@ interface AuthRepository {
                         cancel()
                     }
                 }
-                .addOnFailureListener { trySendBlocking(RegResponse.OnError(it.message))
+                .addOnFailureListener {
+                    trySendBlocking(RegResponse.OnError(it.message))
                     cancel()
                 }
 
             awaitClose{
                 cancel()
-
             }
         }
 
         override fun signOut() = auth.signOut()
-
     }
 }
