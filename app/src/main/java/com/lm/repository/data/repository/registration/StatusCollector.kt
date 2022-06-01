@@ -24,7 +24,8 @@ interface StatusCollector {
                     (auth.currentUser?.uid).also { id ->
                         if (id == null) CoroutineScope(dispatcher).launch {
                             response.credential?.let { cred ->
-                                authRepository.authWithCredential(cred).collect { onDone(it)
+                                authRepository.authWithCredential(cred).collect {
+                                    onDone(it)
                                     cancel()
                                     }
                             }
