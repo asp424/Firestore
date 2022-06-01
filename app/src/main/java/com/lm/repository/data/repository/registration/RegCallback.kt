@@ -13,16 +13,13 @@ class RegCallback(
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         result(RegResponse.Credential(credential))
-        Log.d("My", "cred")
     }
 
     override fun onVerificationFailed(exception: FirebaseException) {
         result(RegResponse.OnError(exception.message))
-    Log.d("My", "err")
     }
 
     override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
         result(RegResponse.RegId(id))
-        Log.d("My", "code")
     }
 }
