@@ -21,7 +21,7 @@ interface StatusCollector {
             when (response) {
                 is RegResponse.Credential -> {
                     onDone(RegResponse.SmsCode(response.credential?.smsCode.toString()))
-                    (auth.currentUser?.uid).also { id ->
+                    auth.currentUser?.uid.also { id ->
                         if (id == null) CoroutineScope(dispatcher).launch {
                             response.credential?.let { cred ->
                                 authRepository.authWithCredential(cred).collect {
